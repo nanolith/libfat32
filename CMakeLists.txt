@@ -49,7 +49,8 @@ TARGET_LINK_LIBRARIES(testfat32 PkgConfig::minunit)
 ADD_CUSTOM_TARGET(
     test
     COMMAND testfat32
-    DEPENDS testfat32)
+    DEPENDS testfat32
+    USES_TERMINAL)
 
 #Build a pkg-config file
 SET(FAT32_PC "${CMAKE_BINARY_DIR}/libfat32.pc")
