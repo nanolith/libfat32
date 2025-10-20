@@ -10,6 +10,7 @@
 #pragma once
 
 #include <libfat32/config.h>
+#include <libfat32/macro_tricks.h>
 
 /*
  * With GCC 3.4 and clang, we can force a warning / error if the return value
