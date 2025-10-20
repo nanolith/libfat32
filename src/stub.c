@@ -9,3 +9,5 @@
 
 #include <libfat32/gpt.h>
 #include <stdio.h>
+
+FAT32_IMPORT_gpt;
