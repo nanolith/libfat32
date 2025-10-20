@@ -60,6 +60,7 @@ struct FAT32_SYM(gpt_protective_mbr)
     FAT32_BEGIN_EXPORT \
     typedef FAT32_SYM(gpt_protective_mbr_partition_record) \
     sym ## gpt_protective_mbr_partition_record; \
+    typedef FAT32_SYM(gpt_protective_mbr) sym ## gpt_protective_mbr; \
     FAT32_END_EXPORT \
     REQUIRE_SEMICOLON_HERE
 #define FAT32_IMPORT_gpt_as(sym) \
