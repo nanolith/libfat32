@@ -35,6 +35,23 @@ struct FAT32_SYM(gpt_protective_mbr_partition_record)
     uint32_t size_in_lba;
 };
 
+/**
+ * \brief The LBA 0 Protective MBR.
+ *
+ * \note As defined in the UEFI 2.11 Specification (Section 5.2.3 Table 5.3).
+ */
+typedef struct FAT32_SYM(gpt_protective_mbr) FAT32_SYM(gpt_protective_mbr);
+
+struct FAT32_SYM(gpt_protective_mbr)
+{
+    uint8_t boot_code[440];
+    uint8_t unique_disk_signature[4];
+    uint8_t unknown[2];
+    FAT32_SYM(gpt_protective_mbr_partition_record) partition_record[4];
+    uint16_t signature;
+    uint8_t reserved[2];
+};
+
 /* C++ compatibility. */
 # ifdef   __cplusplus
 }
