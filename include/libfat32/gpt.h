@@ -53,6 +53,23 @@ struct FAT32_SYM(gpt_protective_mbr)
 };
 
 /******************************************************************************/
+/* Start of constructors.                                                     */
+/******************************************************************************/
+
+/**
+ * \brief Initialize an empty protective mbr partition record.
+ *
+ * \param rec               The record to initialize.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error code on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(gpt_protective_mbr_partition_record_init_clear)(
+    FAT32_SYM(gpt_protective_mbr_partition_record)* rec);
+
+/******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
 
