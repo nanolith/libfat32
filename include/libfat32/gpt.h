@@ -99,6 +99,13 @@ FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
             return \
                 FAT32_SYM(gpt_protective_mbr_partition_record_init_clear)(x); \
         } \
+    static inline int FN_DECL_MUST_CHECK \
+    sym ## gpt_protective_mbr_partition_record_init_span( \
+        FAT32_SYM(gpt_protective_mbr_partition_record)* x, size_t y) { \
+            return \
+                FAT32_SYM(gpt_protective_mbr_partition_record_init_span)( \
+                    x, y); \
+        } \
     FAT32_END_EXPORT \
     REQUIRE_SEMICOLON_HERE
 #define FAT32_IMPORT_gpt_as(sym) \
