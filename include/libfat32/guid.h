@@ -77,6 +77,10 @@ FAT32_SYM(guid_init_from_data)(
     sym ## guid_init_from_string( \
         FAT32_SYM(guid)* x, const char* y) { \
             return FAT32_SYM(guid_init_from_string)(x,y); } \
+    static inline int FN_DECL_MUST_CHECK \
+    sym ## guid_init_from_data( \
+        FAT32_SYM(guid)* x, const void* y, size_t z) { \
+            return FAT32_SYM(guid_init_from_data)(x,y,z); } \
     FAT32_END_EXPORT \
     REQUIRE_SEMICOLON_HERE
 #define FAT32_IMPORT_guid_as(sym) \
