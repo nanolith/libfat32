@@ -9,6 +9,7 @@
 
 #include <libfat32/guid.h>
 #include <libfat32/status.h>
+#include <string.h>
 
 /**
  * \brief Initialize a guid from binary data.
@@ -26,14 +27,19 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_init_from_data)(
     FAT32_SYM(guid)* id, const void* ptr, size_t size)
 {
-    (void)id;
-    (void)ptr;
-
     /* verify that the binary data is the correct size. */
     if (size != FAT32_GUID_BINARY_SIZE)
     {
         return FAT32_ERROR_GUID_DATA_INVALID_SIZE;
     }
 
-    return -1;
+    const uint8_t* bptr = (const uint8_t*)ptr;
+
+    /* TODO - this assumes a little-endian platform. */
+    memcpy(&id->data1, bptr, sizeof(id->data1)); bptr += sizeof(id->data1);
+    memcpy(&id->data2, bptr, sizeof(id->data2)); bptr += sizeof(id->data2);
+    memcpy(&id->data3, bptr, sizeof(id->data3)); bptr += sizeof(id->data3);
+    memcpy(id->data4, bptr, sizeof(id->data4)); bptr += sizeof(id->data4);
+
+    return STATUS_SUCCESS;
 }
