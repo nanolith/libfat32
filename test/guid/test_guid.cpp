@@ -125,3 +125,16 @@ TEST(guid_init_from_string_small_strings)
         FAT32_ERROR_GUID_STRING_BAD
             == guid_init_from_string(&id, "1234567890abcdef1234567890abcde"));
 }
+
+/**
+ * A guid cannot be initialized from a string with more than 32 hex digits.
+ */
+TEST(guid_init_from_string_large_string)
+{
+    guid id;
+
+    /* this string should fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, "1234567890abcdef1234567890abcdef9"));
+}
