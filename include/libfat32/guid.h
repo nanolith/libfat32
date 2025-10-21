@@ -11,6 +11,7 @@
 
 #include <libfat32/function_decl.h>
 #include <stdint.h>
+#include <stddef.h>
 
 /* C++ compatibility. */
 # ifdef   __cplusplus
@@ -48,6 +49,22 @@ struct FAT32_SYM(guid)
  */
 int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_init_from_string)(FAT32_SYM(guid)* id, const char* str);
+
+/**
+ * \brief Initialize a guid from binary data.
+ *
+ * \param id                The guid to initialize.
+ * \param ptr               Pointer to the binary data from which this guid is
+ *                          initialized.
+ * \param size              The size of this data.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(guid_init_from_data)(
+    FAT32_SYM(guid)* id, const void* ptr, size_t size);
 
 /******************************************************************************/
 /* Start of public exports.                                                   */
