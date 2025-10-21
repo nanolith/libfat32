@@ -172,3 +172,24 @@ TEST(guid_init_from_string_basics)
         0x81, 0x31, 0x48, 0xd1, 0xfe, 0x45, 0xb0, 0x08 };
     TEST_EXPECT(0 == memcmp(id.data4, second_last8, sizeof(id.data4)));
 }
+
+/**
+ * Verify that guid_write_to_binary requires the buffer size to be exact.
+ */
+TEST(guid_write_to_binary_invalid_buffer_size)
+{
+    guid id;
+    uint8_t buffer[20];
+
+    memset(&id, 0xa5, sizeof(id));
+
+    /* can't write to a too-small buffer. */
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_DATA_INVALID_SIZE
+            == guid_write_to_binary(buffer, 10, &id));
+
+    /* can't write to a too-large buffer. */
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_DATA_INVALID_SIZE
+            == guid_write_to_binary(buffer, 20, &id));
+}
