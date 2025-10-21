@@ -156,6 +156,10 @@ FAT32_SYM(gpt_protective_mbr_partition_record_write)(
                 FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(x,y); \
         } \
     static inline int FN_DECL_MUST_CHECK \
+    sym ## gpt_protective_mbr_init_span( \
+        FAT32_SYM(gpt_protective_mbr)* x, size_t y) { \
+            return FAT32_SYM(gpt_protective_mbr_init_span)(x,y); } \
+    static inline int FN_DECL_MUST_CHECK \
     sym ## gpt_protective_mbr_partition_record_read( \
         FAT32_SYM(gpt_protective_mbr_partition_record)* x, const void* y, \
         size_t z) { \
