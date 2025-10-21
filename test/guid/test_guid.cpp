@@ -219,3 +219,22 @@ TEST(guid_write_to_binary_basics)
         0xac, 0x62, 0xa5, 0x5c, 0x7b, 0xf9, 0x88, 0xf9 };
     TEST_EXPECT(0 == memcmp(buffer, expected_buffer, 16));
 }
+
+/**
+ * Verify that guid_write_to_string rejects any string buffer that is too small.
+ */
+TEST(guid_write_to_string_too_small)
+{
+    guid id;
+    char buffer[37];
+
+    /* c8668d03-e2ee-43f0-9c58-c373b2005b18. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_string(
+                    &id, "c8668d03-e2ee-43f0-9c58-c373b2005b18"));
+
+    /* String serialization should fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD == guid_write_to_string(buffer, 16, &id));
+}
