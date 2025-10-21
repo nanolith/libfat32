@@ -10,6 +10,7 @@
 #pragma once
 
 #include <libfat32/function_decl.h>
+#include <libfat32/guid.h>
 #include <stddef.h>
 #include <stdint.h>
 
