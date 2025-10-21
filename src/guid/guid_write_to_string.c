@@ -33,13 +33,21 @@ FAT32_SYM(guid_write_to_string)(
     }
 
     /* convert to the string representation. */
-    sprintf(str, "%08x-", id->data1);
-    sprintf(str +  9, "%04x-", id->data2);
-    sprintf(str + 14, "%04x-", id->data3);
-    for (int i = 0; i < 8; ++i)
+    sprintf(str, "%08x", id->data1);
+    sprintf(str +  9, "%04x", id->data2);
+    sprintf(str + 14, "%04x", id->data3);
+    for (int i = 0; i < 2; ++i)
     {
         sprintf(str + 19 + 2*i, "%02x", id->data4[i]);
     }
+    for (int i = 2; i < 8; ++i)
+    {
+        sprintf(str + 20 + 2*i, "%02x", id->data4[i]);
+    }
+    str[8] = '-';
+    str[13] = '-';
+    str[18] = '-';
+    str[23] = '-';
     str[36] = 0;
 
     return STATUS_SUCCESS;
