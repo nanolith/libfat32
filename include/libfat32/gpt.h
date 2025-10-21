@@ -147,7 +147,7 @@ FAT32_SYM(gpt_protective_mbr_partition_record_write)(
  */
 int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_read)(
-    FAT32_SYM(gpt_protective_mbr)* rec, const void* ptr, size_t size);
+    FAT32_SYM(gpt_protective_mbr)* mbr, const void* ptr, size_t size);
 
 /**
  * \brief Write a protective mbr to a given location in RAM.
