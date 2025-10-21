@@ -32,7 +32,7 @@ struct FAT32_SYM(gpt_protective_mbr_partition_record)
     uint8_t boot_indicator;
     uint32_t starting_chs; //Note: serialized as 24-bit.
     uint8_t os_type;
-    uint32_t ending_chh; //Note: serialized as 24-bit.
+    uint32_t ending_chs; //Note: serialized as 24-bit.
     uint32_t starting_lba;
     uint32_t size_in_lba;
 };
