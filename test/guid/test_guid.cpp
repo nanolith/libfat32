@@ -138,3 +138,37 @@ TEST(guid_init_from_string_large_string)
         FAT32_ERROR_GUID_STRING_BAD
             == guid_init_from_string(&id, "1234567890abcdef1234567890abcdef9"));
 }
+
+/**
+ * Verify a few GUID strings.
+ */
+TEST(guid_init_from_string_basics)
+{
+    guid id;
+
+    /* 00000000-0000-0000-0000-000000000000 */
+    memset(&id, 0xa5, sizeof(id));
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_string(
+                    &id, "00000000-0000-0000-0000-000000000000"));
+    TEST_EXPECT(0x00000000 == id.data1);
+    TEST_EXPECT(0x0000 == id.data2);
+    TEST_EXPECT(0x0000 == id.data3);
+    const uint8_t first_last8[8] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    TEST_EXPECT(0 == memcmp(id.data4, first_last8, sizeof(id.data4)));
+
+    /* dd59d73b-ed16-4a2d-8131-48d1fe45b008 */
+    memset(&id, 0xa5, sizeof(id));
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_string(
+                    &id, "dd59d73b-ed16-4a2d-8131-48d1fe45b008"));
+    TEST_EXPECT(0xdd59d73b == id.data1);
+    TEST_EXPECT(0xed16 == id.data2);
+    TEST_EXPECT(0x4a2d == id.data3);
+    const uint8_t second_last8[8] = {
+        0x81, 0x31, 0x48, 0xd1, 0xfe, 0x45, 0xb0, 0x08 };
+    TEST_EXPECT(0 == memcmp(id.data4, second_last8, sizeof(id.data4)));
+}
