@@ -134,6 +134,21 @@ FAT32_SYM(gpt_protective_mbr_partition_record_write)(
     void* ptr, size_t size,
     const FAT32_SYM(gpt_protective_mbr_partition_record)* rec);
 
+/**
+ * \brief Read a protective mbr from a given location in RAM.
+ *
+ * \param mbr               The record to populate with RAM data.
+ * \param ptr               The pointer from which this data is read.
+ * \param size              The size of this data.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error code on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(gpt_protective_mbr_read)(
+    FAT32_SYM(gpt_protective_mbr)* rec, const void* ptr, size_t size);
+
 /******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
