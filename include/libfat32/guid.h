@@ -32,6 +32,24 @@ struct FAT32_SYM(guid)
 };
 
 /******************************************************************************/
+/* Start of constructors.                                                     */
+/******************************************************************************/
+
+/**
+ * \brief Initialize a guid from a string.
+ *
+ * \param id                The guid to initialize.
+ * \param str               The input string from which this guid is
+ *                          initialized.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(guid_init_from_string)(FAT32_SYM(guid)* id, const char* str);
+
+/******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
 
