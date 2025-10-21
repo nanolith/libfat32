@@ -193,3 +193,29 @@ TEST(guid_write_to_binary_invalid_buffer_size)
         FAT32_ERROR_GUID_DATA_INVALID_SIZE
             == guid_write_to_binary(buffer, 20, &id));
 }
+
+/**
+ * Verify that guid_write_to_binary writes the Microsoft mixed-endian
+ * representation to the buffer.
+ */
+TEST(guid_write_to_binary_basics)
+{
+    guid id;
+    uint8_t buffer[16];
+
+    /* 2109cb94-0999-4d91-ac62-a55c7bf988f9. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_string(
+                    &id, "2109cb94-0999-4d91-ac62-a55c7bf988f9"));
+
+    /* We can serialize this guid in Microsoft format. */
+    TEST_ASSERT(
+        STATUS_SUCCESS == guid_write_to_binary(buffer, sizeof(buffer), &id));
+
+    /* verify that the data was written in mixed-endian format. */
+    const uint8_t expected_buffer[16] = {
+        0x94, 0xcb, 0x09, 0x21, 0x99, 0x09, 0x91, 0x4d,
+        0xac, 0x62, 0xa5, 0x5c, 0x7b, 0xf9, 0x88, 0xf9 };
+    TEST_EXPECT(0 == memcmp(buffer, expected_buffer, 16));
+}
