@@ -100,3 +100,28 @@ TEST(guid_init_from_data_mixed_endian)
     TEST_EXPECT(0x0201 == id.data3);
     TEST_EXPECT(0 == memcmp(id.data4, data + 8, sizeof(id.data4)));
 }
+
+/**
+ * A guid cannot be initialized from a string with less than 32 hex digits.
+ */
+TEST(guid_init_from_string_small_strings)
+{
+    guid id;
+
+    /* each of these strings should fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, ""));
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, "a"));
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, "ab"));
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, "ab,c123"));
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD
+            == guid_init_from_string(&id, "1234567890abcdef1234567890abcde"));
+}
