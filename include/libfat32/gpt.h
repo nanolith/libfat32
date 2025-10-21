@@ -51,7 +51,6 @@ struct FAT32_SYM(gpt_protective_mbr)
     uint8_t unknown[2];
     FAT32_SYM(gpt_protective_mbr_partition_record) partition_record[4];
     uint16_t signature;
-    uint8_t reserved[2];
 };
 
 /******************************************************************************/
