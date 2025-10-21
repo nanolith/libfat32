@@ -84,6 +84,20 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec, size_t size);
 
+/**
+ * \brief Initialize a protective mbr spanning the entire disk.
+ *
+ * \param mbr               The record to initialize.
+ * \param size              Size of the entire disk in bytes.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error code on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(gpt_protective_mbr_init_span)(
+    FAT32_SYM(gpt_protective_mbr)* mbr, size_t size);
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
