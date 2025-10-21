@@ -238,3 +238,23 @@ TEST(guid_write_to_string_too_small)
     TEST_ASSERT(
         FAT32_ERROR_GUID_STRING_BAD == guid_write_to_string(buffer, 16, &id));
 }
+
+/**
+ * Verify round trip from string to guid to string.
+ */
+TEST(guid_write_to_string_round_trip)
+{
+    guid id;
+    const char* GUID = "6902835d-a2c1-479d-a609-befa24e93ea4";
+    char buffer[37];
+
+    /* convert this string representation to a guid. */
+    TEST_ASSERT(STATUS_SUCCESS == guid_init_from_string(&id, GUID));
+
+    /* Serialize this string to the buffer. */
+    TEST_ASSERT(
+        STATUS_SUCCESS == guid_write_to_string(buffer, sizeof(buffer), &id));
+
+    /* the two strings should match. */
+    TEST_EXPECT(0 == strcmp(GUID, buffer));
+}
