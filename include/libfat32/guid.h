@@ -31,6 +31,20 @@ struct FAT32_SYM(guid)
     uint8_t data4[8];
 };
 
+/******************************************************************************/
+/* Start of public exports.                                                   */
+/******************************************************************************/
+
+#define __INTERNAL_FAT32_IMPORT_guid_sym(sym) \
+    FAT32_BEGIN_EXPORT \
+    typedef FAT32_SYM(guid) sym ## guid; \
+    FAT32_END_EXPORT \
+    REQUIRE_SEMICOLON_HERE
+#define FAT32_IMPORT_guid_as(sym) \
+    __INTERNAL_FAT32_IMPORT_guid_sym(sym ## _)
+#define FAT32_IMPORT_guid \
+    __INTERNAL_FAT32_IMPORT_guid_sym()
+
 /* C++ compatibility. */
 # ifdef   __cplusplus
 }
