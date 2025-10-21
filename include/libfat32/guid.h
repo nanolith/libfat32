@@ -18,7 +18,8 @@ extern "C" {
 # endif /*__cplusplus*/
 
 /**
- * \brief A GUID is similar to a UUID, but it is represented differently.
+ * \brief A GUID is similar to a UUID, but it is serialized differently, both ta
+ * and from binary fields and to and from strings.
  */
 typedef struct FAT32_SYM(guid) FAT32_SYM(guid);
 
