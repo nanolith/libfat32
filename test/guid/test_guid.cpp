@@ -10,6 +10,7 @@
 #include <libfat32/guid.h>
 #include <libfat32/status.h>
 #include <minunit/minunit.h>
+#include <string.h>
 
 FAT32_IMPORT_guid;
 
@@ -46,4 +47,30 @@ TEST(guid_init_from_data_large_size)
     TEST_ASSERT(
         FAT32_ERROR_GUID_DATA_INVALID_SIZE
             == guid_init_from_data(&id, data, DATA_SIZE));
+}
+
+/**
+ * All zero guid data results in a zero guid.
+ */
+TEST(guid_init_from_data_zeroes)
+{
+    uint8_t data[16] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    size_t DATA_SIZE = sizeof(data);
+    guid id;
+
+    /* precondition: set id to a non-zero value. */
+    memset(&id, 0xa5, sizeof(id));
+
+    /* initialization should succeed. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_data(&id, data, DATA_SIZE));
+
+    /* postcondition: id should be zero. */
+    TEST_EXPECT(0 == id.data1);
+    TEST_EXPECT(0 == id.data2);
+    TEST_EXPECT(0 == id.data3);
+    TEST_EXPECT(0 == memcmp(id.data4, data + 8, sizeof(id.data4)));
 }
