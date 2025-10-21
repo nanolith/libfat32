@@ -205,6 +205,10 @@ FAT32_SYM(gpt_protective_mbr_write)(
     sym ## gpt_protective_mbr_read( \
         FAT32_SYM(gpt_protective_mbr)* x, const void* y, size_t z) { \
             return FAT32_SYM(gpt_protective_mbr_read)(x,y,z); } \
+    static inline int FN_DECL_MUST_CHECK \
+    sym ## gpt_protective_mbr_write( \
+        void* x, size_t y, const FAT32_SYM(gpt_protective_mbr)* z) { \
+            return FAT32_SYM(gpt_protective_mbr_write)(x,y,z); } \
     FAT32_END_EXPORT \
     REQUIRE_SEMICOLON_HERE
 #define FAT32_IMPORT_gpt_as(sym) \
