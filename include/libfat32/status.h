@@ -17,7 +17,7 @@ extern "C" {
 enum fat32_status_codes
 {
     STATUS_SUCCESS =                                                        0,
-    FAT32_ERROR_GUID_DATA_TOO_SMALL =                                       1,
+    FAT32_ERROR_GUID_DATA_INVALID_SIZE =                                    1,
 };
 
 /* C++ compatibility. */
