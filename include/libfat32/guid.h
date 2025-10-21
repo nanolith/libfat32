@@ -19,6 +19,7 @@ extern "C" {
 # endif /*__cplusplus*/
 
 #define FAT32_GUID_BINARY_SIZE 16
+#define FAT32_GUID_STRING_SIZE 37
 
 /**
  * \brief A GUID is similar to a UUID, but it is serialized differently, both ta
