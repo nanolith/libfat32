@@ -30,3 +30,20 @@ TEST(guid_init_from_data_small_size)
         FAT32_ERROR_GUID_DATA_INVALID_SIZE
             == guid_init_from_data(&id, data, DATA_SIZE));
 }
+
+/**
+ * A guid requires 16 bytes of binary data to be initialized.
+ */
+TEST(guid_init_from_data_large_size)
+{
+    uint8_t data[24] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    size_t DATA_SIZE = sizeof(data);
+    guid id;
+
+    TEST_ASSERT(
+        FAT32_ERROR_GUID_DATA_INVALID_SIZE
+            == guid_init_from_data(&id, data, DATA_SIZE));
+}
