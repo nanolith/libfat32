@@ -11,3 +11,4 @@
 #include <stdio.h>
 
 FAT32_IMPORT_gpt;
+FAT32_IMPORT_guid;
