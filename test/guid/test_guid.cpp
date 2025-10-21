@@ -74,3 +74,29 @@ TEST(guid_init_from_data_zeroes)
     TEST_EXPECT(0 == id.data3);
     TEST_EXPECT(0 == memcmp(id.data4, data + 8, sizeof(id.data4)));
 }
+
+/**
+ * guids are mixed-endian. LE, LE, LE, BE.
+ */
+TEST(guid_init_from_data_mixed_endian)
+{
+    uint8_t data[16] = {
+        0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x01, 0x02,
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+    size_t DATA_SIZE = sizeof(data);
+    guid id;
+
+    /* precondition: set id to a non-zero value. */
+    memset(&id, 0xa5, sizeof(id));
+
+    /* initialization should succeed. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == guid_init_from_data(&id, data, DATA_SIZE));
+
+    /* postcondition: id should be in the correct mixed-endian format. */
+    TEST_EXPECT(0x04030201 == id.data1);
+    TEST_EXPECT(0x0201 == id.data2);
+    TEST_EXPECT(0x0201 == id.data3);
+    TEST_EXPECT(0 == memcmp(id.data4, data + 8, sizeof(id.data4)));
+}
