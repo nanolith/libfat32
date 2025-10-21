@@ -119,6 +119,10 @@ FAT32_SYM(guid_write_to_binary)(
     sym ## guid_write_to_string( \
         char* x, size_t y, const FAT32_SYM(guid)* z) { \
             return FAT32_SYM(guid_write_to_string)(x,y,z); } \
+    static inline int FN_DECL_MUST_CHECK \
+    sym ## guid_write_to_binary( \
+        void* x, size_t y, const FAT32_SYM(guid)* z) { \
+            return FAT32_SYM(guid_write_to_binary)(x,y,z); } \
     FAT32_END_EXPORT \
     REQUIRE_SEMICOLON_HERE
 #define FAT32_IMPORT_guid_as(sym) \
