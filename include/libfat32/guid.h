@@ -67,6 +67,25 @@ FAT32_SYM(guid_init_from_data)(
     FAT32_SYM(guid)* id, const void* ptr, size_t size);
 
 /******************************************************************************/
+/* Start of public methods.                                                   */
+/******************************************************************************/
+
+/**
+ * \brief Write the guid representation in the given string buffer.
+ *
+ * \param str               The string buffer.
+ * \param size              The maximum size of the string buffer.
+ * \param id                The guid to write.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(guid_write_to_string)(
+    char* str, size_t size, const FAT32_SYM(guid)* id);
+
+/******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
 
