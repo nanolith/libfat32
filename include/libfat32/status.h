@@ -20,6 +20,7 @@ enum fat32_status_codes
     FAT32_ERROR_GUID_DATA_INVALID_SIZE =                                    1,
     FAT32_ERROR_GUID_STRING_BAD =                                           2,
     FAT32_ERROR_GPT_BAD_SIZE =                                              3,
+    FAT32_ERROR_GPT_MBR_BAD_SIGNATURE =                                     4,
 };
 
 /* C++ compatibility. */
