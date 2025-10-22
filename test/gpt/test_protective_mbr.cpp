@@ -139,3 +139,51 @@ TEST(gpt_protective_mbr_partition_record_write_empty)
         TEST_EXPECT(0 == buffer[i]);
     }
 }
+
+/**
+ * Verify that we can write a protective MBR record covering a small span.
+ */
+TEST(gpt_protective_mbr_partition_record_write_small_span)
+{
+    gpt_protective_mbr_partition_record rec;
+    uint8_t buffer[16];
+    const size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+
+    /* initialize this data structure. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_span(&rec, disk_size));
+
+    /* write succeeds. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_write(buffer, 16, &rec));
+
+    /* verify the boot indicator. */
+    TEST_EXPECT(0 == buffer[0]);
+
+    /* verify the starting chs. */
+    TEST_EXPECT(0x00 == buffer[ 1]);
+    TEST_EXPECT(0x02 == buffer[ 2]);
+    TEST_EXPECT(0x00 == buffer[ 3]);
+
+    /* verify the OS type record. */
+    TEST_EXPECT(0xEE == buffer[ 4]);
+
+    /* verify the ending chs. */
+    TEST_EXPECT(0xFF == buffer[ 5]);
+    TEST_EXPECT(0xFF == buffer[ 6]);
+    TEST_EXPECT(0xFF == buffer[ 7]);
+
+    /* verify the starting lba. */
+    TEST_EXPECT(0x01 == buffer[ 8]);
+    TEST_EXPECT(0x00 == buffer[ 9]);
+    TEST_EXPECT(0x00 == buffer[10]);
+    TEST_EXPECT(0x00 == buffer[11]);
+
+    /* verify the size in lba. */
+    TEST_EXPECT(0xFF == buffer[12]);
+    TEST_EXPECT(0xFF == buffer[13]);
+    TEST_EXPECT(0xFF == buffer[14]);
+    TEST_EXPECT(0x0F == buffer[15]);
+}
