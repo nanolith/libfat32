@@ -613,3 +613,21 @@ TEST(gpt_protective_mbr_write)
     TEST_EXPECT(0x55 == buffer[510]);
     TEST_EXPECT(0xAA == buffer[511]);
 }
+
+/**
+ * Verify that an error is returned if we attempt to read an MBR from a region
+ * that is too small to contain it.
+ */
+TEST(gpt_protective_mbr_read_too_small)
+{
+    gpt_protective_mbr mbr;
+    uint8_t buffer[128];
+
+    /* zero this out for testing. */
+    memset(buffer, 0, sizeof(buffer));
+
+    /* read should fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE
+            == gpt_protective_mbr_read(&mbr, buffer, sizeof(buffer)));
+}
