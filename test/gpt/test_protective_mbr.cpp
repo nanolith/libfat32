@@ -510,3 +510,86 @@ TEST(gpt_protective_mbr_init_span_4TB)
     /* the signature is 0xAA55. */
     TEST_EXPECT(0xAA55 == mbr.signature);
 }
+
+/**
+ * Verify that we can write an MBR instance to a region of memory.
+ */
+TEST(gpt_protective_mbr_init_write)
+{
+    gpt_protective_mbr mbr;
+    gpt_protective_mbr_partition_record span_record, unused_record,
+                                        read_span_record, read_unused_record;
+    size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+    uint8_t buffer[512];
+
+    /* initialize this data structure. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_init_span(&mbr, disk_size));
+
+    /* initialize our span record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_span(
+                    &span_record, disk_size));
+
+    /* initialize our unused record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_clear(&unused_record));
+
+    /* write this MBR record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_write(buffer, sizeof(buffer), &mbr));
+
+    /* the boot code should be a nop sled followed by a halt and a jump. */
+    for (int i = 0; i < 437; ++i)
+    {
+        /* NOP. */
+        TEST_EXPECT(0x90 == buffer[i]);
+    }
+    /* HALT. */
+    TEST_EXPECT(0xF4 == buffer[437]);
+    /* JMP back to the HALT. */
+    TEST_EXPECT(0xEB == buffer[438]);
+    TEST_EXPECT(0xFD == buffer[439]);
+
+    /* the signature is all zeroes. */
+    for (int i = 440; i < 444; ++i)
+    {
+        TEST_EXPECT(0x00 == buffer[i]);
+    }
+
+    /* the "unknown" bytes are set to 0. */
+    TEST_EXPECT(0x00 == buffer[444]);
+    TEST_EXPECT(0x00 == buffer[445]);
+
+    /* read the first partition record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_read(
+                    &read_span_record, buffer + 446, 16));
+
+    /* it should match the span record. */
+    TEST_EXPECT(
+        0 == memcmp(&read_span_record, &span_record, sizeof(span_record)));
+
+    /* all other records are unused. */
+    for (int i = 1; i < 4; ++i)
+    {
+        TEST_ASSERT(
+            STATUS_SUCCESS
+                == gpt_protective_mbr_partition_record_read(
+                        &read_unused_record, buffer + 446 + 16*i, 16));
+        TEST_EXPECT(
+            0
+                == memcmp(
+                        &read_unused_record, &unused_record,
+                        sizeof(unused_record)));
+    }
+
+    /* the signature is 0xAA55. */
+    TEST_EXPECT(0x55 == buffer[510]);
+    TEST_EXPECT(0xAA == buffer[511]);
+}
