@@ -39,3 +39,30 @@ TEST(gpt_protective_mbr_partition_record_init_clear)
     TEST_EXPECT(0 == rec.starting_lba);
     TEST_EXPECT(0 == rec.size_in_lba);
 }
+
+/**
+ * We can initialize a "span" mbr partition record covering 128GB.
+ */
+TEST(gpt_protective_mbr_partition_record_init_span_128GB)
+{
+    gpt_protective_mbr_partition_record rec;
+    const size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+    const size_t disk_sectors = disk_size / 512UL;
+    const size_t lba_size = disk_sectors - 1UL;
+
+    /* precondition: fill with junk. */
+    memset(&rec, 0xa5, sizeof(rec));
+
+    /* initialize this data structure. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_span(&rec, disk_size));
+
+    /* verify the partition record data. */
+    TEST_EXPECT(0 == rec.boot_indicator);
+    TEST_EXPECT(0x00000200 == rec.starting_chs);
+    TEST_EXPECT(0xEE == rec.os_type);
+    TEST_EXPECT(0x00FFFFFF == rec.ending_chs);
+    TEST_EXPECT(0x00000001 == rec.starting_lba);
+    TEST_EXPECT(lba_size == rec.size_in_lba);
+}
