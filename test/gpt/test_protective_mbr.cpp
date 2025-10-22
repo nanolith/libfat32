@@ -374,3 +374,71 @@ TEST(gpt_protective_mbr_partition_record_write_and_read_oversize)
     TEST_EXPECT(rec.starting_lba == read_rec.starting_lba);
     TEST_EXPECT(rec.size_in_lba == read_rec.size_in_lba);
 }
+
+/**
+ * We can initialize a "span" protective MBR covering 128GB.
+ */
+TEST(gpt_protective_mbr_init_span_128GB)
+{
+    gpt_protective_mbr mbr;
+    gpt_protective_mbr_partition_record span_record;
+    gpt_protective_mbr_partition_record unused_record;
+    size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+
+    /* precondition: fill with junk. */
+    memset(&mbr, 0x5a, sizeof(mbr));
+
+    /* initialize this data structure. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_init_span(&mbr, disk_size));
+
+    /* initialize our span record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_span(
+                    &span_record, disk_size));
+
+    /* initialize our unused record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_clear(&unused_record));
+
+    /* the boot code should be a nop sled followed by a halt and a jump. */
+    for (int i = 0; i < 437; ++i)
+    {
+        /* NOP. */
+        TEST_EXPECT(0x90 == mbr.boot_code[i]);
+    }
+    /* HALT. */
+    TEST_EXPECT(0xF4 == mbr.boot_code[437]);
+    /* JMP back to the HALT. */
+    TEST_EXPECT(0xEB == mbr.boot_code[438]);
+    TEST_EXPECT(0xFD == mbr.boot_code[439]);
+
+    /* the signature is all zeroes. */
+    for (int i = 0; i < 4; ++i)
+    {
+        TEST_EXPECT(0x00 == mbr.unique_disk_signature[i]);
+    }
+
+    /* the first partition record matches our span record. */
+    TEST_EXPECT(
+        0
+            == memcmp(
+                    &mbr.partition_record[0], &span_record,
+                    sizeof(span_record)));
+
+    /* all other records are unused. */
+    for (int i = 1; i < 4; ++i)
+    {
+        TEST_EXPECT(
+            0
+                == memcmp(
+                        &mbr.partition_record[i], &unused_record,
+                        sizeof(unused_record)));
+    }
+
+    /* the signature is 0xAA55. */
+    TEST_EXPECT(0xAA55 == mbr.signature);
+}
