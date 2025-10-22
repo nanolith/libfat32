@@ -112,3 +112,30 @@ TEST(gpt_protective_mbr_partition_record_write_bad_size)
         FAT32_ERROR_GPT_BAD_SIZE
             == gpt_protective_mbr_partition_record_write(buffer, 24, &rec));
 }
+
+/**
+ * Verify that we can write an empty protective MBR partition record.
+ */
+TEST(gpt_protective_mbr_partition_record_write_empty)
+{
+    gpt_protective_mbr_partition_record rec;
+    uint8_t buffer[16];
+
+    /* precondition: fill buffer with junk. */
+    memset(buffer, 0x5a, sizeof(buffer));
+
+    /* create an empty partition record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS == gpt_protective_mbr_partition_record_init_clear(&rec));
+
+    /* write succeeds. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_write(buffer, 16, &rec));
+
+    /* an empty record is all zeroes. */
+    for (int i = 0; i < 16; ++i)
+    {
+        TEST_EXPECT(0 == buffer[i]);
+    }
+}
