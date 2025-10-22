@@ -91,3 +91,24 @@ TEST(gpt_protective_mbr_partition_record_init_span_oversize_4TB)
     TEST_EXPECT(0x00000001 == rec.starting_lba);
     TEST_EXPECT(0xFFFFFFFF == rec.size_in_lba);
 }
+
+/**
+ * It is an error to call gpt_protective_mbr_partition_record_write with an
+ * invalid size.
+ */
+TEST(gpt_protective_mbr_partition_record_write_bad_size)
+{
+    gpt_protective_mbr_partition_record rec;
+    uint8_t buffer[32];
+
+    TEST_ASSERT(
+        STATUS_SUCCESS == gpt_protective_mbr_partition_record_init_clear(&rec));
+
+    /* a bad size fails. */
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE
+            == gpt_protective_mbr_partition_record_write(buffer, 8, &rec));
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE
+            == gpt_protective_mbr_partition_record_write(buffer, 24, &rec));
+}
