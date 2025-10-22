@@ -631,3 +631,36 @@ TEST(gpt_protective_mbr_read_too_small)
         FAT32_ERROR_GPT_BAD_SIZE
             == gpt_protective_mbr_read(&mbr, buffer, sizeof(buffer)));
 }
+
+/**
+ * Verify that we can write an MBR instance and read it back.
+ */
+TEST(gpt_protective_mbr_write_and_read_small)
+{
+    gpt_protective_mbr mbr, read_mbr;
+    uint8_t buffer[512];
+    const size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+
+    /* precondition: fill buffer with junk. */
+    memset(buffer, 0x5a, sizeof(buffer));
+    memset(&read_mbr, 0x5a, sizeof(read_mbr));
+
+    /* create an mbr instance. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_init_span(&mbr, disk_size));
+
+    /* write succeeds. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_write(buffer, sizeof(buffer), &mbr));
+
+    /* read the mbr back. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_read(
+                    &read_mbr, buffer, sizeof(buffer)));
+
+    /* the two records should match. */
+    TEST_EXPECT(0 == memcmp(&mbr, &read_mbr, sizeof(mbr)));
+}
