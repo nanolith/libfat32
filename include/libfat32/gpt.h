@@ -19,6 +19,8 @@
 extern "C" {
 # endif /*__cplusplus*/
 
+#define FAT32_GPT_PROTECTIVE_MBR_PARTITION_RECORD_SIZE                      16
+
 /**
  * \brief A partition record in the protective MBR.
  *
