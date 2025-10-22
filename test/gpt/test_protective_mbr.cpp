@@ -235,3 +235,24 @@ TEST(gpt_protective_mbr_partition_record_write_oversize_span)
     TEST_EXPECT(0xFF == buffer[14]);
     TEST_EXPECT(0xFF == buffer[15]);
 }
+
+/**
+ * Verify that attempting to read a protective MBR record from an incorrectly
+ * sized memory location fails.
+ */
+TEST(gpt_protective_mbr_partition_record_read_bad_size)
+{
+    gpt_protective_mbr_partition_record rec;
+    uint8_t buffer[32];
+
+    /* precondition: zero memory. */
+    memset(buffer, 0, sizeof(buffer));
+
+    /* reads from the wrong memory size fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE ==
+            gpt_protective_mbr_partition_record_read(&rec, buffer, 15));
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE ==
+            gpt_protective_mbr_partition_record_read(&rec, buffer, 24));
+}
