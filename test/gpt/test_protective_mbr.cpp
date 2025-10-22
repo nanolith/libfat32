@@ -294,3 +294,43 @@ TEST(gpt_protective_mbr_partition_record_write_and_read_empty)
     TEST_EXPECT(rec.starting_lba == read_rec.starting_lba);
     TEST_EXPECT(rec.size_in_lba == read_rec.size_in_lba);
 }
+
+/**
+ * Verify that we can write a small protective MBR partition record and read it
+ * back.
+ */
+TEST(gpt_protective_mbr_partition_record_write_and_read_small)
+{
+    gpt_protective_mbr_partition_record rec;
+    gpt_protective_mbr_partition_record read_rec;
+    uint8_t buffer[16];
+    const size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+
+    /* precondition: fill buffer with junk. */
+    memset(buffer, 0x5a, sizeof(buffer));
+    memset(&read_rec, 0x5a, sizeof(read_rec));
+
+    /* create a span partition record. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_init_span(&rec, disk_size));
+
+    /* write succeeds. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_write(buffer, 16, &rec));
+
+    /* read the record back. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_partition_record_read(
+                    &read_rec, buffer, sizeof(buffer)));
+
+    /* verify fields. */
+    TEST_EXPECT(rec.boot_indicator == read_rec.boot_indicator);
+    TEST_EXPECT(rec.starting_chs == read_rec.starting_chs);
+    TEST_EXPECT(rec.os_type == read_rec.os_type);
+    TEST_EXPECT(rec.ending_chs == read_rec.ending_chs);
+    TEST_EXPECT(rec.starting_lba == read_rec.starting_lba);
+    TEST_EXPECT(rec.size_in_lba == read_rec.size_in_lba);
+}
