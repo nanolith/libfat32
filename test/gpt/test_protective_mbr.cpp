@@ -512,9 +512,29 @@ TEST(gpt_protective_mbr_init_span_4TB)
 }
 
 /**
+ * Verify that an error is returned if an mbr is written to a too small region.
+ */
+TEST(gpt_protective_mbr_write_too_small)
+{
+    gpt_protective_mbr mbr;
+    size_t disk_size = 128UL * 1024UL * 1024UL * 1024UL;
+    uint8_t buffer[128];
+
+    /* initialize this data structure. */
+    TEST_ASSERT(
+        STATUS_SUCCESS
+            == gpt_protective_mbr_init_span(&mbr, disk_size));
+
+    /* write should fail. */
+    TEST_ASSERT(
+        FAT32_ERROR_GPT_BAD_SIZE
+            == gpt_protective_mbr_write(buffer, sizeof(buffer), &mbr));
+}
+
+/**
  * Verify that we can write an MBR instance to a region of memory.
  */
-TEST(gpt_protective_mbr_init_write)
+TEST(gpt_protective_mbr_write)
 {
     gpt_protective_mbr mbr;
     gpt_protective_mbr_partition_record span_record, unused_record,
