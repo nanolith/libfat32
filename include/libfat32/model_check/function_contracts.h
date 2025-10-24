@@ -29,3 +29,9 @@
 #define MODEL_CONTRACT_POSTCONDITIONS_END(function) \
     } \
     FAT32_END_CONTRACT_HELPER
+
+#ifdef CBMC
+#define MODEL_CONTRACT_CHECK_PRECONDITIONS1(function, ...) \
+    function ## _preconditions(__VA_ARGS__)
+#else
+#endif
