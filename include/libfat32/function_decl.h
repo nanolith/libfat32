@@ -70,3 +70,9 @@
 #define FAT32_BEGIN_CONTRACT_HELPER \
     _Pragma("GCC diagnostic push") \
     _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
+
+/**
+ * End a contract helper section.
+ */
+#define FAT32_END_CONTRACT_HELPER \
+    _Pragma("GCC diagnostic pop")
