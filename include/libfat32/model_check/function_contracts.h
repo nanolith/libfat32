@@ -35,6 +35,8 @@
     function ## _preconditions(__VA_ARGS__)
 #define MODEL_CONTRACT_CHECK_PRECONDITIONS(function, ...) \
     MODEL_CONTRACT_CHECK_PRECONDITIONS1(function, __VA_ARGS__)
+#define MODEL_CONTRACT_CHECK_POSTCONDITIONS1(function, ...) \
+    function ## _postconditions(__VA_ARGS__)
 #else
 #define MODEL_CONTRACT_CHECK_PRECONDITIONS(function, ...) \
     ; \
