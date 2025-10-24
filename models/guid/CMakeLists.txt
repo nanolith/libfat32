@@ -1,0 +1,1 @@
+ADD_SUBDIRECTORY(guid_init_from_string)
