@@ -64,7 +64,7 @@ static uint64_t read_little_endian(const uint8_t* buffer, size_t count)
 
     for (size_t i = 0; i < count; ++i)
     {
-        value |= (buffer[i] << (i * 8));
+        value |= (((uint64_t)buffer[i]) << (i * 8));
     }
 
     return value;
