@@ -7,10 +7,15 @@
  * distribution for the license terms under which this software is distributed.
  */
 
-#include <ctype.h>
 #include <libfat32/guid.h>
 #include <libfat32/status.h>
 #include <string.h>
+
+#ifdef CBMC
+int isxdigit(int c);
+#else
+#include <ctype.h>
+#endif
 
 /* forward decls. */
 static uint32_t convert_digits(const uint8_t* digits, size_t count);
