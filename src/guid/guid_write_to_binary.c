@@ -11,6 +11,9 @@
 #include <libfat32/status.h>
 #include <string.h>
 
+/* forward decls. */
+static void write_little_endian(uint8_t* buffer, uint64_t value, size_t count);
+
 /**
  * \brief Write the guid representation to the given binary buffer.
  *
@@ -34,11 +37,26 @@ FAT32_SYM(guid_write_to_binary)(
 
     uint8_t* bbuf = (uint8_t*)buffer;
 
-    /* TODO - this assumes little-endian. */
-    memcpy(bbuf +  0, &id->data1, sizeof(id->data1));
-    memcpy(bbuf +  4, &id->data2, sizeof(id->data2));
-    memcpy(bbuf +  6, &id->data3, sizeof(id->data3));
+    write_little_endian(bbuf + 0, id->data1, sizeof(id->data1));
+    write_little_endian(bbuf + 4, id->data2, sizeof(id->data2));
+    write_little_endian(bbuf + 6, id->data3, sizeof(id->data3));
     memcpy(bbuf +  8, id->data4, sizeof(id->data4));
 
     return STATUS_SUCCESS;
+}
+
+/**
+ * \brief Write a little-endian value to the given buffer.
+ *
+ * \param buffer            The output buffer.
+ * \param value             The value to write.
+ * \param count             The number of bytes to write.
+ */
+static void write_little_endian(uint8_t* buffer, uint64_t value, size_t count)
+{
+    while (count--)
+    {
+        *(buffer++) = value & 0xFF;
+        value >>= 8;
+    }
 }
