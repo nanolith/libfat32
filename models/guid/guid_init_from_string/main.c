@@ -13,25 +13,17 @@
 
 FAT32_IMPORT_guid;
 
-static char nondet_char();
-
 int main(int argc, char* argv[])
 {
     (void)argc;
     (void)argv;
     int retval;
     guid id;
-    char guid_str[40] = {
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), nondet_char(), 
-        nondet_char(), nondet_char(), nondet_char(), 0 };
+    char guid_str[40];
+
+    /* randomize the input string. */
+    __CPROVER_havoc_object(guid_str);
+    guid_str[39] = 0;
 
     /* initialize the guid. */
     retval = guid_init_from_string(&id, guid_str);
