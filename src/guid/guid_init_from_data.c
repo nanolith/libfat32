@@ -11,6 +11,9 @@
 #include <libfat32/status.h>
 #include <string.h>
 
+/* forward decls. */
+static uint64_t read_little_endian(const uint8_t* buffer, size_t count);
+
 /**
  * \brief Initialize a guid from binary data.
  *
@@ -35,11 +38,34 @@ FAT32_SYM(guid_init_from_data)(
 
     const uint8_t* bptr = (const uint8_t*)ptr;
 
-    /* TODO - this assumes a little-endian platform. */
-    memcpy(&id->data1, bptr, sizeof(id->data1)); bptr += sizeof(id->data1);
-    memcpy(&id->data2, bptr, sizeof(id->data2)); bptr += sizeof(id->data2);
-    memcpy(&id->data3, bptr, sizeof(id->data3)); bptr += sizeof(id->data3);
-    memcpy(id->data4, bptr, sizeof(id->data4)); bptr += sizeof(id->data4);
+    id->data1 = read_little_endian(bptr, sizeof(id->data1));
+    bptr += sizeof(id->data1);
+    id->data2 = read_little_endian(bptr, sizeof(id->data2));
+    bptr += sizeof(id->data2);
+    id->data3 = read_little_endian(bptr, sizeof(id->data3));
+    bptr += sizeof(id->data3);
+    memcpy(id->data4, bptr, sizeof(id->data4));
+    bptr += sizeof(id->data4);
 
     return STATUS_SUCCESS;
+}
+
+/**
+ * \brief Read a little-endian value from the given buffer.
+ *
+ * \param buffer            The buffer from which this value is read.
+ * \param count             The nmubre of bytes to read.
+ *
+ * \returns the uint64_t representation of this value.
+ */
+static uint64_t read_little_endian(const uint8_t* buffer, size_t count)
+{
+    uint64_t value = 0;
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        value |= (buffer[i] << (i * 8));
+    }
+
+    return value;
 }
