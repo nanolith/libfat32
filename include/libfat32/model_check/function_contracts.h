@@ -21,3 +21,6 @@
 #define MODEL_CONTRACT_PRECONDITIONS_END(function) \
     } \
     FAT32_END_CONTRACT_HELPER
+#define MODEL_CONTRACT_POSTCONDITIONS_BEGIN1(function, ...) \
+    FAT32_BEGIN_CONTRACT_HELPER \
+    inline void function ## _postconditions(__VA_ARGS__) {
