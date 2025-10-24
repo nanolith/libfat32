@@ -50,10 +50,7 @@ ADD_EXECUTABLE(testfat32
     ${LIBFAT32_SOURCES} ${LIBFAT32_TEST_SOURCES})
 SET_PROPERTY(TARGET testfat32 PROPERTY C_STANDARD 17)
 SET_PROPERTY(TARGET testfat32 PROPERTY CXX_STANDARD 17)
-TARGET_COMPILE_OPTIONS(
-    testfat32 PRIVATE -g -O0 --coverage -I${minunit_INCLUDE_DIRS}
-                       -Wall -Werror -Wextra -Wpedantic
-                       -Wno-unused-command-line-argument)
+TARGET_COMPILE_OPTIONS(testfat32 PRIVATE ${C_TEST_BUILD_OPTIONS})
 TARGET_LINK_OPTIONS(testfat32 PRIVATE --coverage)
 TARGET_LINK_LIBRARIES(testfat32 PkgConfig::minunit)
 
