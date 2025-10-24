@@ -13,6 +13,21 @@
 
 FAT32_IMPORT_guid;
 
+static void init_success(const char* str)
+{
+    guid id;
+
+    MODEL_ASSERT(STATUS_SUCCESS == guid_init_from_string(&id, str));
+}
+
+static void init_fail(const char* str)
+{
+    guid id;
+
+    MODEL_ASSERT(
+        FAT32_ERROR_GUID_STRING_BAD == guid_init_from_string(&id, str));
+}
+
 int main(int argc, char* argv[])
 {
     (void)argc;
@@ -32,6 +47,14 @@ int main(int argc, char* argv[])
         MODEL_ASSERT(FAT32_ERROR_GUID_STRING_BAD == retval);
         return 1;
     }
+
+    /* these should succeed. */
+    init_success("e64f4d23-81a8-4cce-9ba4-58a6d470a6f9");
+    init_success("2fa4cf54e22d4a5480f74a448a8454b7");
+
+    /* these should fail. */
+    init_fail("");
+    init_fail("aa0ee1f6-c8e4-413f-aeee-8d8aa3476eca0");
 
     return 0;
 }
