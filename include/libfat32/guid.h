@@ -104,6 +104,17 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_CHECK_OBJECT_READ(ptr, size);
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_init_from_data))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(guid_init_from_data),
+    int retval, FAT32_SYM(guid)* id, const void* ptr, size_t size)
+        /* this call either succeeds or fails with a
+         * FAT32_ERROR_GUID_DATA_INVALID_SIZE. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GUID_DATA_INVALID_SIZE == retval));
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(guid_init_from_data))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
