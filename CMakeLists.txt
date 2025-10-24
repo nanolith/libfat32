@@ -14,6 +14,7 @@ list(GET LIBFAT32_VERSION_LIST 2 LIBFAT32_VERSION_REL)
 INCLUDE(CheckSymbolExists)
 
 SET(COMPILER_CHOOSER ${CMAKE_SOURCE_DIR}/scripts/compiler-chooser.sh)
+SET(LINKER_CHOOSER ${CMAKE_SOURCE_DIR}/scripts/linker-chooser.sh)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(minunit REQUIRED IMPORTED_TARGET minunit)
