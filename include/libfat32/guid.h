@@ -94,6 +94,16 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_init_from_data)(
     FAT32_SYM(guid)* id, const void* ptr, size_t size);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(guid_init_from_data),
+    FAT32_SYM(guid)* id, const void* ptr, size_t size)
+        /* id must be accessible. */
+        MODEL_CHECK_OBJECT_RW(id, sizeof(*id));
+        /* data must be readable. */
+        MODEL_CHECK_OBJECT_READ(ptr, size);
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_init_from_data))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
