@@ -13,6 +13,7 @@
 #include <libfat32/model_check/assert.h>
 #include <libfat32/model_check/function_contracts.h>
 #include <libfat32/model_check/memory.h>
+#include <libfat32/status.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -65,6 +66,17 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         /* str must not be NULL. */
         MODEL_ASSERT(NULL != str);
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_init_from_string))
+
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(guid_init_from_string),
+    int retval, FAT32_SYM(guid)* id, const char* str)
+        /* this call either succeeds or fails with a
+         * FAT32_ERROR_GUID_STRING_BAD. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GUID_STRING_BAD == retval));
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(guid_init_from_string))
 
 /**
  * \brief Initialize a guid from binary data.
