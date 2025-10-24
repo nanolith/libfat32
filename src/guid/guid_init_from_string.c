@@ -38,6 +38,10 @@ FAT32_SYM(guid_init_from_string)(FAT32_SYM(guid)* id, const char* str)
     uint8_t digits[32];
     size_t index = 0;
 
+    /* check preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(guid_init_from_string), id, str);
+
     /* iterate through all digits of the sequence. */
     for (; 0 != *str; ++str)
     {
@@ -76,6 +80,10 @@ FAT32_SYM(guid_init_from_string)(FAT32_SYM(guid)* id, const char* str)
 
 done:
     memset(digits, 0, sizeof(digits));
+
+    /* check postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(guid_init_from_string), retval, id, str);
 
     return retval;
 }
