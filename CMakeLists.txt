@@ -19,6 +19,8 @@ SET(LINKER_CHOOSER ${CMAKE_SOURCE_DIR}/scripts/linker-chooser.sh)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(minunit REQUIRED IMPORTED_TARGET minunit)
 
+SET(C_OPTIMIZATION_OPTIONS -fPIC -O2)
+
 #Build config.h
 configure_file(config.h.cmake include/libfat32/config.h)
 
