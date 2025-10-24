@@ -18,3 +18,6 @@
     inline void function ## _preconditions(__VA_ARGS__) {
 #define MODEL_CONTRACT_PRECONDITIONS_BEGIN(function, ...) \
     MODEL_CONTRACT_PRECONDITIONS_BEGIN1(function, __VA_ARGS__)
+#define MODEL_CONTRACT_PRECONDITIONS_END(function) \
+    } \
+    FAT32_END_CONTRACT_HELPER
