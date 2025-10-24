@@ -16,3 +16,5 @@
 #define MODEL_CONTRACT_PRECONDITIONS_BEGIN1(function, ...) \
     FAT32_BEGIN_CONTRACT_HELPER \
     inline void function ## _preconditions(__VA_ARGS__) {
+#define MODEL_CONTRACT_PRECONDITIONS_BEGIN(function, ...) \
+    MODEL_CONTRACT_PRECONDITIONS_BEGIN1(function, __VA_ARGS__)
