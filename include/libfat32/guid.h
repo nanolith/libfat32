@@ -10,6 +10,9 @@
 #pragma once
 
 #include <libfat32/function_decl.h>
+#include <libfat32/model_check/assert.h>
+#include <libfat32/model_check/function_contracts.h>
+#include <libfat32/model_check/memory.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -52,6 +55,16 @@ struct FAT32_SYM(guid)
  */
 int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_init_from_string)(FAT32_SYM(guid)* id, const char* str);
+
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(guid_init_from_string),
+    FAT32_SYM(guid)* id, const char* str)
+        /* id must be accessible. */
+        MODEL_CHECK_OBJECT_RW(id, sizeof(*id));
+        /* str must not be NULL. */
+        MODEL_ASSERT(NULL != str);
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_init_from_string))
 
 /**
  * \brief Initialize a guid from binary data.
