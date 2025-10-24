@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY(guid_init_from_string)
+ADD_SUBDIRECTORY(guid_init_from_string_shadow)
