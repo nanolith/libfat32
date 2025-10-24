@@ -21,6 +21,9 @@ pkg_search_module(minunit REQUIRED IMPORTED_TARGET minunit)
 
 SET(C_OPTIMIZATION_OPTIONS -fPIC -O2)
 SET(C_TEST_OPTIONS -g -O0 --coverage)
+SET(C_WARNING_OPTIONS
+    -Wall -Werror -Wextra -Wpedantic
+    -Wno-unused-command-line-argument)
 
 #Build config.h
 configure_file(config.h.cmake include/libfat32/config.h)
