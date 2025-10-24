@@ -30,10 +30,17 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_init_from_data)(
     FAT32_SYM(guid)* id, const void* ptr, size_t size)
 {
+    int retval;
+
+    /* check preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(guid_init_from_data), id, ptr, size);
+
     /* verify that the binary data is the correct size. */
     if (size != FAT32_GUID_BINARY_SIZE)
     {
-        return FAT32_ERROR_GUID_DATA_INVALID_SIZE;
+        retval = FAT32_ERROR_GUID_DATA_INVALID_SIZE;
+        goto done;
     }
 
     const uint8_t* bptr = (const uint8_t*)ptr;
@@ -47,7 +54,15 @@ FAT32_SYM(guid_init_from_data)(
     memcpy(id->data4, bptr, sizeof(id->data4));
     bptr += sizeof(id->data4);
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    /* check postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(guid_init_from_data), retval, id, ptr, size);
+
+    return retval;
 }
 
 /**
