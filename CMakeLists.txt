@@ -26,6 +26,7 @@ SET(C_WARNING_OPTIONS
     -Wno-unused-command-line-argument)
 SET(C_RELEASE_BUILD_OPTIONS ${C_OPTIMIZATION_OPTIONS} ${C_WARNING_OPTIONS})
 SET(C_TEST_BUILD_OPTIONS ${C_TEST_OPTIONS} ${C_WARNING_OPTIONS})
+SET(C_TEST_LINK_OPTIONS -g -O0 --coverage)
 
 #Build config.h
 configure_file(config.h.cmake include/libfat32/config.h)
