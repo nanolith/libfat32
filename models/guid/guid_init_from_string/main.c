@@ -1,5 +1,5 @@
 /**
- * \file models/guid/guid_init_from_string.c
+ * \file models/guid/guid_init_from_string/main.c
  *
  * \brief Model checks for \ref guid_init_from_string.
  *
