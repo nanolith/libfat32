@@ -9,7 +9,10 @@
 
 #include <libfat32/guid.h>
 #include <libfat32/status.h>
-#include <stdio.h>
+
+/* forward decls. */
+static void write_hex_chars(char* str, uint64_t value, size_t count);
+static char hex_nibble(unsigned int value);
 
 /**
  * \brief Write the guid representation in the given string buffer.
@@ -40,16 +43,16 @@ FAT32_SYM(guid_write_to_string)(
     }
 
     /* convert to the string representation. */
-    sprintf(str, "%08x", id->data1);
-    sprintf(str +  9, "%04x", id->data2);
-    sprintf(str + 14, "%04x", id->data3);
+    write_hex_chars(str,      id->data1, 8);
+    write_hex_chars(str +  9, id->data2, 4);
+    write_hex_chars(str + 14, id->data3, 4);
     for (int i = 0; i < 2; ++i)
     {
-        sprintf(str + 19 + 2*i, "%02x", id->data4[i]);
+        write_hex_chars(str + 19 + 2*i, id->data4[i], 2);
     }
     for (int i = 2; i < 8; ++i)
     {
-        sprintf(str + 20 + 2*i, "%02x", id->data4[i]);
+        write_hex_chars(str + 20 + 2*i, id->data4[i], 2);
     }
     str[8] = '-';
     str[13] = '-';
@@ -66,4 +69,43 @@ done:
         FAT32_SYM(guid_write_to_string), retval, str, size, id);
 
     return retval;
+}
+
+/**
+ * \brief Write hex characters to a string.
+ *
+ * \note This method does not zero terminate the string.
+ *
+ * \param str           The output string to which the characters are written.
+ * \param value         The value to write as a hex string.
+ * \param count         The number of characters to write.
+ */
+static void write_hex_chars(char* str, uint64_t value, size_t count)
+{
+    for (size_t i = 0; i < count; ++i)
+    {
+        str[count - i - 1] = hex_nibble(value & 0x0F);
+        value >>= 4;
+    }
+}
+
+/**
+ * \brief Return the hex nibble of a given value.
+ *
+ * \param value         The value to convert.
+ *
+ * \returns a hex character representation of this nibble.
+ */
+static char hex_nibble(unsigned int value)
+{
+    MODEL_ASSERT(value <= 0xF);
+
+    if (value <= 9)
+    {
+        return value + '0';
+    }
+    else
+    {
+        return value - 10 + 'a';
+    }
 }
