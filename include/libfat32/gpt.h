@@ -178,6 +178,14 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_init_span)(
     FAT32_SYM(gpt_protective_mbr)* mbr, size_t size);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_init_span), FAT32_SYM(gpt_protective_mbr)* mbr,
+    size_t size)
+        /* mbr must be accessible. */
+        MODEL_CHECK_OBJECT_RW(mbr, sizeof(*mbr));
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
