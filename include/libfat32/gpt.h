@@ -142,6 +142,15 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec, size_t size);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_span),
+    FAT32_SYM(gpt_protective_mbr_partition_record)* rec, size_t size)
+        /* rec must be accessible. */
+        MODEL_CHECK_OBJECT_RW(id, sizeof(*id));
+MODEL_CONTRACT_PRECONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
+
 /**
  * \brief Initialize a protective mbr spanning the entire disk.
  *
