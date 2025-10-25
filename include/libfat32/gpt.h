@@ -151,6 +151,19 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
 MODEL_CONTRACT_PRECONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_span),
+    int retval, FAT32_SYM(gpt_protective_mbr_partition_record)* rec,
+    size_t size)
+        /* this method always succeeds. */
+        MODEL_ASSERT(STATUS_SUCCESS == retval);
+        /* on success, the partition record is a span record, which is valid. */
+        MODEL_ASSERT(
+            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid(rec)));
+MODEL_CONTRACT_POSTCONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
+
 /**
  * \brief Initialize a protective mbr spanning the entire disk.
  *
