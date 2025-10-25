@@ -29,10 +29,17 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_write_to_binary)(
     void* buffer, size_t size, const FAT32_SYM(guid)* id)
 {
+    int retval;
+
+    /* check preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(guid_write_to_binary), buffer, size, id);
+
     /* make sure the buffer is the right size. */
     if (FAT32_GUID_BINARY_SIZE != size)
     {
-        return FAT32_ERROR_GUID_DATA_INVALID_SIZE;
+        retval = FAT32_ERROR_GUID_DATA_INVALID_SIZE;
+        goto done;
     }
 
     uint8_t* bbuf = (uint8_t*)buffer;
@@ -42,7 +49,15 @@ FAT32_SYM(guid_write_to_binary)(
     write_little_endian(bbuf + 6, id->data3, sizeof(id->data3));
     memcpy(bbuf +  8, id->data4, sizeof(id->data4));
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    /* check postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(guid_write_to_binary), retval, buffer, size, id);
+
+    return retval;
 }
 
 /**
