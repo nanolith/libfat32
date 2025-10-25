@@ -144,6 +144,17 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_CHECK_OBJECT_READ(id, sizeof(*id));
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_write_to_string))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(guid_write_to_string),
+    int retval, char* str, size_t size, const FAT32_SYM(guid)* id)
+        /* this call either succeeds or fails with a
+         * FAT32_ERROR_GUID_STRING_BAD. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GUID_STRING_BAD == retval));
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(guid_write_to_string))
+
 /**
  * \brief Write the guid representation to the given binary buffer.
  *
