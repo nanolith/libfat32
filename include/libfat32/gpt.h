@@ -186,6 +186,16 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_CHECK_OBJECT_RW(mbr, sizeof(*mbr));
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_init_span), int retval,
+    FAT32_SYM(gpt_protective_mbr)* mbr, size_t size)
+        /* this method always succeeds. */
+        MODEL_ASSERT(STATUS_SUCCESS == retval);
+        /* on success, the mbr is valid. */
+        MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
