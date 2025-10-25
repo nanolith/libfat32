@@ -170,6 +170,16 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_write_to_binary)(
     void* buffer, size_t size, const FAT32_SYM(guid)* id);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(guid_write_to_binary),
+    void* buffer, size_t size, const FAT32_SYM(guid)* id)
+        /* buffer must be accessible. */
+        MODEL_CHECK_OBJECT_WRITE(buffer, size);
+        /* id must be accessible. */
+        MODEL_CHECK_OBJECT_READ(id, sizeof(*id));
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_write_to_binary))
+
 /******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
