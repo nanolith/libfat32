@@ -134,6 +134,16 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_write_to_string)(
     char* str, size_t size, const FAT32_SYM(guid)* id);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(guid_write_to_string),
+    char* str, size_t size, const FAT32_SYM(guid)* id)
+        /* str must be accessible. */
+        MODEL_CHECK_OBJECT_WRITE(str, size);
+        /* id must be accessible. */
+        MODEL_CHECK_OBJECT_READ(id, sizeof(*id));
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(guid_write_to_string))
+
 /**
  * \brief Write the guid representation to the given binary buffer.
  *
