@@ -73,6 +73,19 @@ struct FAT32_SYM(gpt_protective_mbr)
 bool FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(
     const FAT32_SYM(gpt_protective_mbr_partition_record)* rec);
 
+/**
+ * \brief Returns true if the given protective MBR is valid.
+ *
+ * \note A valid protective MBR has all records set as expected, one
+ * protective span partition record, and three empty partition records.
+ *
+ * \param mbr           The MBR to check.
+ *
+ * \returns true if this record is valid and false otherwise.
+ */
+bool FAT32_SYM(property_gpt_protective_mbr_valid)(
+    const FAT32_SYM(gpt_protective_mbr)* mbr);
+
 /******************************************************************************/
 /* Start of constructors.                                                     */
 /******************************************************************************/
