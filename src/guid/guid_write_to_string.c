@@ -26,10 +26,17 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(guid_write_to_string)(
     char* str, size_t size, const FAT32_SYM(guid)* id)
 {
+    int retval;
+
+    /* check preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(guid_write_to_string), str, size, id);
+
     /* verify that this buffer can hold a guid representation. */
     if (size < FAT32_GUID_STRING_SIZE)
     {
-        return FAT32_ERROR_GUID_STRING_BAD;
+        retval = FAT32_ERROR_GUID_STRING_BAD;
+        goto done;
     }
 
     /* convert to the string representation. */
@@ -50,5 +57,13 @@ FAT32_SYM(guid_write_to_string)(
     str[23] = '-';
     str[36] = 0;
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    /* check postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(guid_write_to_string), retval, str, size, id);
+
+    return retval;
 }
