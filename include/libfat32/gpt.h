@@ -11,6 +11,7 @@
 
 #include <libfat32/function_decl.h>
 #include <libfat32/guid.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -54,6 +55,23 @@ struct FAT32_SYM(gpt_protective_mbr)
     FAT32_SYM(gpt_protective_mbr_partition_record) partition_record[4];
     uint16_t signature;
 };
+
+/******************************************************************************/
+/* Start of properties.                                                       */
+/******************************************************************************/
+
+/**
+ * \brief Returns true if the given protective MBR partition record is valid.
+ *
+ * \note Valid records here are either empty records or the protective span
+ * record.
+ *
+ * \param rec           The record to check.
+ *
+ * \returns true if this record is valid and false otherwise.
+ */
+bool FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(
+    const FAT32_SYM(gpt_protective_mbr_partition_record)* rec);
 
 /******************************************************************************/
 /* Start of constructors.                                                     */
