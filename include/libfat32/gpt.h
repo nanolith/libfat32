@@ -11,6 +11,10 @@
 
 #include <libfat32/function_decl.h>
 #include <libfat32/guid.h>
+#include <libfat32/model_check/assert.h>
+#include <libfat32/model_check/function_contracts.h>
+#include <libfat32/model_check/memory.h>
+#include <libfat32/status.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -102,6 +106,15 @@ bool FAT32_SYM(property_gpt_protective_mbr_valid)(
 int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_partition_record_init_clear)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec);
+
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_clear),
+    FAT32_SYM(gpt_protective_mbr_partition_record)* rec)
+        /* rec must be accessible. */
+        MODEL_CHECK_OBJECT_RW(id, sizeof(*id));
+MODEL_CONTRACT_PRECONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_clear))
 
 /**
  * \brief Initialize a protective mbr partition record spanning the entire disk.
