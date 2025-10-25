@@ -116,6 +116,18 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
 MODEL_CONTRACT_PRECONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_clear))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_clear),
+    int retval, FAT32_SYM(gpt_protective_mbr_partition_record)* rec)
+        /* this method always succeeds. */
+        MODEL_ASSERT(STATUS_SUCCESS == retval);
+        /* on success, the partition record is clear, which is valid. */
+        MODEL_ASSERT(
+            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid(rec)));
+MODEL_CONTRACT_POSTCONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_init_clear))
+
 /**
  * \brief Initialize a protective mbr partition record spanning the entire disk.
  *
