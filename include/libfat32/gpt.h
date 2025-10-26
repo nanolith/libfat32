@@ -216,6 +216,18 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec, const void* ptr,
     size_t size);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_read),
+    FAT32_SYM(gpt_protective_mbr_partition_record)* rec, const void* ptr,
+    size_t size)
+        /* rec must be accessible. */
+        MODEL_CHECK_OBJECT_RW(rec, sizeof(*rec));
+        /* ptr must be accessible. */
+        MODEL_CHECK_OBJECT_READ(ptr, size);
+MODEL_CONTRACT_PRECONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_read))
+
 /**
  * \brief Write a protective mbr partition record to a given location in RAM.
  *
