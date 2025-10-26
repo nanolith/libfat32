@@ -346,6 +346,16 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_write)(
     void* ptr, size_t size, const FAT32_SYM(gpt_protective_mbr)* mbr);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_write), void* ptr, size_t size,
+    const FAT32_SYM(gpt_protective_mbr)* mbr)
+        /* mbr must be valid. */
+        MODEL_ASSERT(property_gpt_protective_mbr_valid(mbr));
+        /* ptr must be accessible. */
+        MODEL_CHECK_OBJECT_WRITE(ptr, size);
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_write))
+
 /******************************************************************************/
 /* Start of public exports.                                                   */
 /******************************************************************************/
