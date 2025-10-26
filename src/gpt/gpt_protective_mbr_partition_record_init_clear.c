@@ -24,7 +24,21 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_partition_record_init_clear)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec)
 {
+    int retval;
+
+    /* check preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_init_clear), rec);
+
     memset(rec, 0, sizeof(*rec));
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    /* check postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_init_clear), retval, rec);
+
+    return retval;
 }
