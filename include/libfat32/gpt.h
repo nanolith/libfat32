@@ -124,7 +124,7 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         MODEL_ASSERT(STATUS_SUCCESS == retval);
         /* on success, the partition record is clear, which is valid. */
         MODEL_ASSERT(
-            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid(rec)));
+            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(rec));
 MODEL_CONTRACT_POSTCONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_clear))
 
@@ -147,7 +147,7 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span),
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec, size_t size)
         /* rec must be accessible. */
-        MODEL_CHECK_OBJECT_RW(id, sizeof(*id));
+        MODEL_CHECK_OBJECT_RW(rec, sizeof(*rec));
 MODEL_CONTRACT_PRECONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
 
@@ -160,7 +160,7 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         MODEL_ASSERT(STATUS_SUCCESS == retval);
         /* on success, the partition record is a span record, which is valid. */
         MODEL_ASSERT(
-            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid(rec)));
+            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(rec));
 MODEL_CONTRACT_POSTCONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
 
@@ -243,7 +243,8 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         if (STATUS_SUCCESS == retval)
         {
             MODEL_ASSERT(
-                property_gpt_protective_mbr_partition_record_valid(rec));
+                FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(
+                    rec));
         }
 MODEL_CONTRACT_POSTCONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_read))
@@ -270,7 +271,8 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
     void* ptr, size_t size,
     const FAT32_SYM(gpt_protective_mbr_partition_record)* rec)
         /* rec must be valid. */
-        MODEL_ASSERT(property_gpt_protective_mbr_partition_record_valid(rec));
+        MODEL_ASSERT(
+            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(rec));
         /* ptr must be accessible. */
         MODEL_CHECK_OBJECT_WRITE(ptr, size);
 MODEL_CONTRACT_PRECONDITIONS_END(
@@ -327,7 +329,7 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         /* if this method succeeds, then the record is valid. */
         if (STATUS_SUCCESS == retval)
         {
-            MODEL_ASSERT(property_gpt_protective_mbr_valid(mbr));
+            MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
         }
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_read))
 
@@ -351,7 +353,7 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
     FAT32_SYM(gpt_protective_mbr_write), void* ptr, size_t size,
     const FAT32_SYM(gpt_protective_mbr)* mbr)
         /* mbr must be valid. */
-        MODEL_ASSERT(property_gpt_protective_mbr_valid(mbr));
+        MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
         /* ptr must be accessible. */
         MODEL_CHECK_OBJECT_WRITE(ptr, size);
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_write))
