@@ -1,0 +1,1 @@
+ADD_SUBDIRECTORY(gpt_protective_mbr_partition_record_init_clear)
