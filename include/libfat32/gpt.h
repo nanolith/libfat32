@@ -276,6 +276,18 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
 MODEL_CONTRACT_PRECONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_write))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(gpt_protective_mbr_partition_record_write),
+    int retval, void* ptr, size_t size,
+    const FAT32_SYM(gpt_protective_mbr_partition_record)* rec)
+        /* this method either succeeds or fails with one of the following. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GPT_BAD_SIZE));
+MODEL_CONTRACT_POSTCONDITIONS_END(
+    FAT32_SYM(gpt_protective_mbr_partition_record_write))
+
 /**
  * \brief Read a protective mbr from a given location in RAM.
  *
