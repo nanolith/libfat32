@@ -1,2 +1,3 @@
 ADD_SUBDIRECTORY(gpt_protective_mbr_partition_record_init_clear)
 ADD_SUBDIRECTORY(gpt_protective_mbr_partition_record_init_clear_shadow)
+ADD_SUBDIRECTORY(gpt_protective_mbr_partition_record_init_span)
