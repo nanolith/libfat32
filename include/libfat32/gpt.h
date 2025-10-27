@@ -156,11 +156,17 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span),
     int retval, FAT32_SYM(gpt_protective_mbr_partition_record)* rec,
     size_t size)
-        /* this method always succeeds. */
-        MODEL_ASSERT(STATUS_SUCCESS == retval);
-        /* on success, the partition record is a span record, which is valid. */
+        /* this method either succeeds or fails with a bad size error. */
         MODEL_ASSERT(
-            FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(rec));
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GPT_BAD_SIZE == retval));
+        /* on success, the partition record is a span record, which is valid. */
+        if (STATUS_SUCCESS == retval)
+        {
+            MODEL_ASSERT(
+                FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(
+                    rec));
+        }
 MODEL_CONTRACT_POSTCONDITIONS_END(
     FAT32_SYM(gpt_protective_mbr_partition_record_init_span))
 
