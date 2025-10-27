@@ -196,8 +196,11 @@ MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
 MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
     FAT32_SYM(gpt_protective_mbr_init_span), int retval,
     FAT32_SYM(gpt_protective_mbr)* mbr, size_t size)
-        /* this method always succeeds. */
-        MODEL_ASSERT(STATUS_SUCCESS == retval);
+        /* this method either succeeds or fails with the following failure
+         * codes. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GPT_BAD_SIZE == retval));
         /* on success, the mbr is valid. */
         MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
