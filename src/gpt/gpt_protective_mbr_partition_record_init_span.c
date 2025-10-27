@@ -35,6 +35,12 @@ FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
         return retval;
     }
 
+    /* the size must be at least large enough to hold GPT records. */
+    if (size < (512UL * 33UL))
+    {
+        return FAT32_ERROR_GPT_BAD_SIZE;
+    }
+
     /* compute the disk size in sectors. */
     size_t lba_size = (size / 512UL) - 1UL;
     if (lba_size > 0xFFFFFFFF)
