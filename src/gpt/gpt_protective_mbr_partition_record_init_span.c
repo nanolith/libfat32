@@ -29,16 +29,21 @@ FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
 {
     int retval;
 
+    /* verify preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_init_span), rec, size);
+
     retval = gpt_protective_mbr_partition_record_init_clear(rec);
     if (STATUS_SUCCESS != retval)
     {
-        return retval;
+        goto done;
     }
 
     /* the size must be at least large enough to hold GPT records. */
     if (size < (512UL * 33UL))
     {
-        return FAT32_ERROR_GPT_BAD_SIZE;
+        retval = FAT32_ERROR_GPT_BAD_SIZE;
+        goto done;
     }
 
     /* compute the disk size in sectors. */
@@ -56,5 +61,13 @@ FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
     rec->starting_lba = 0x00000001;
     rec->size_in_lba = lba_size;
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_init_span), retval, rec,
+        size);
+
+    return retval;
 }
