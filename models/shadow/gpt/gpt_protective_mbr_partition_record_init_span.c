@@ -40,25 +40,8 @@ FAT32_SYM(gpt_protective_mbr_partition_record_init_span)(
 
     if (STATUS_SUCCESS == retval)
     {
-        memset(rec, 0, sizeof(*rec));
-
-        size_t lba_size = nondet_lba_size();
-        if (lba_size < 33)
-        {
-            lba_size = 33;
-        }
-        else if (lba_size > 0xFFFFFFFF)
-        {
-            lba_size = 0xFFFFFFFF;
-        }
-
-        /* Set as per UEFI Specification 2.11, section 5.2.3. */
-        rec->boot_indicator = 0;
-        rec->starting_chs = 0x00000200;
         rec->os_type = 0xEE;
-        rec->ending_chs = 0x00FFFFFF;
-        rec->starting_lba = 0x00000001;
-        rec->size_in_lba = lba_size;
+        MODEL_ASSUME(property_gpt_protective_mbr_partition_record_valid(rec));
     }
     else
     {
