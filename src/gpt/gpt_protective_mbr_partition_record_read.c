@@ -89,13 +89,15 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
      * span protection record. First, check for the blank record. */
     if (
         (0 == rec->starting_chs)
-     && (0 == rec->os_type))
+     && (0 == rec->os_type)
+     && (0 == rec->ending_chs))
     {
         retval = STATUS_SUCCESS;
     }
     else if (
         (0x200 == rec->starting_chs)
-     && (0xEE == rec->os_type))
+     && (0xEE == rec->os_type)
+     && (0x00FFFFFF == rec->ending_chs))
     {
         retval = STATUS_SUCCESS;
     }
