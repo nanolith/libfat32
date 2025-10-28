@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
     uint8_t data[40];
     gpt_protective_mbr_partition_record rec;
 
-    /* initialize the record. */
+    /* read the record. */
     retval =
         gpt_protective_mbr_partition_record_read(&rec, data, record_size());
     if (STATUS_SUCCESS != retval)
     {
-        /* this method only fails with a bad size error. */
+        /* this method only fails with one of the following errors. */
         MODEL_ASSERT(
             (FAT32_ERROR_GPT_BAD_SIZE == retval)
          || (FAT32_ERROR_GPT_BAD_RECORD == retval));
