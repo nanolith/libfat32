@@ -56,6 +56,17 @@ FAT32_SYM(gpt_protective_mbr_read)(
         mbr->unique_disk_signature, bptr, sizeof(mbr->unique_disk_signature));
     bptr += sizeof(mbr->unique_disk_signature);
 
+    /* verify this signature matches UEFI specification. */
+    if (
+        (0 != mbr->unique_disk_signature[0])
+     || (0 != mbr->unique_disk_signature[1])
+     || (0 != mbr->unique_disk_signature[2])
+     || (0 != mbr->unique_disk_signature[3]))
+    {
+        retval = FAT32_ERROR_GPT_BAD_RECORD;
+        goto done;
+    }
+
     /* skip the unknown bytes. */
     bptr += 2;
 
