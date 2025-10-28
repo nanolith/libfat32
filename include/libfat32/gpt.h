@@ -202,7 +202,10 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
             (STATUS_SUCCESS == retval)
          || (FAT32_ERROR_GPT_BAD_SIZE == retval));
         /* on success, the mbr is valid. */
-        MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
+        if (STATUS_SUCCESS == retval)
+        {
+            MODEL_ASSERT(FAT32_SYM(property_gpt_protective_mbr_valid)(mbr));
+        }
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
 
 /******************************************************************************/
