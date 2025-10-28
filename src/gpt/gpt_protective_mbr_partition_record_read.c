@@ -27,10 +27,17 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     FAT32_SYM(gpt_protective_mbr_partition_record)* rec, const void* ptr,
     size_t size)
 {
+    int retval;
+
+    /* check function preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_read), rec, ptr, size);
+
     /* verify the memory region size. */
     if (FAT32_GPT_PROTECTIVE_MBR_PARTITION_RECORD_SIZE != size)
     {
-        return FAT32_ERROR_GPT_BAD_SIZE;
+        retval = FAT32_ERROR_GPT_BAD_SIZE;
+        goto done;
     }
 
     /* clear record. */
@@ -71,5 +78,15 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     rec->size_in_lba |= ((uint32_t)bptr[14]) << 16;
     rec->size_in_lba |= ((uint32_t)bptr[15]) << 24;
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+
+    /* check function contract postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_partition_record_read),
+        retval, rec, ptr, size);
+
+    return retval;
 }
