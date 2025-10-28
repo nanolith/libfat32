@@ -96,6 +96,7 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     {
         retval = STATUS_SUCCESS;
     }
+    /* otherwise, the record should span the whole GPT format. */
     else if (
         (0x200 == rec->starting_chs)
      && (0xEE == rec->os_type)
