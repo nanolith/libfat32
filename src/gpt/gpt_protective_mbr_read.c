@@ -30,10 +30,15 @@ FAT32_SYM(gpt_protective_mbr_read)(
 {
     int retval;
 
+    /* function contract preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_read), mbr, ptr, size);
+
     /* verify that this memory region is large enough to hold an MBR. */
     if (size < FAT32_GPT_PROTECTIVE_MBR_MINIMUM_SIZE)
     {
-        return FAT32_ERROR_GPT_BAD_SIZE;
+        retval = FAT32_ERROR_GPT_BAD_SIZE;
+        goto done;
     }
 
     /* clear mbr. */
@@ -63,7 +68,7 @@ FAT32_SYM(gpt_protective_mbr_read)(
                 FAT32_GPT_PROTECTIVE_MBR_PARTITION_RECORD_SIZE);
         if (STATUS_SUCCESS != retval)
         {
-            return retval;
+            goto done;
         }
 
         bptr += FAT32_GPT_PROTECTIVE_MBR_PARTITION_RECORD_SIZE;
@@ -77,8 +82,17 @@ FAT32_SYM(gpt_protective_mbr_read)(
     /* verify signature. */
     if (mbr->signature != 0xAA55)
     {
-        return FAT32_ERROR_GPT_MBR_BAD_SIGNATURE;
+        retval = FAT32_ERROR_GPT_MBR_BAD_SIGNATURE;
+        goto done;
     }
 
-    return STATUS_SUCCESS;
+    retval = STATUS_SUCCESS;
+    goto done;
+
+done:
+    /* function contract postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_read), retval, mbr, ptr, size);
+
+    return retval;
 }
