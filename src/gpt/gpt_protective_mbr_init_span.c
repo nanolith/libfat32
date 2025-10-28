@@ -84,6 +84,12 @@ int FN_DECL_MUST_CHECK
 FAT32_SYM(gpt_protective_mbr_init_span)(
     FAT32_SYM(gpt_protective_mbr)* mbr, size_t size)
 {
+    int retval;
+
+    /* function contract preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_init_span), mbr, size);
+
     /* clear the record. */
     memset(mbr, 0, sizeof(*mbr));
 
@@ -94,7 +100,13 @@ FAT32_SYM(gpt_protective_mbr_init_span)(
     mbr->signature = 0xAA55;
 
     /* initialize the span partition. */
-    return
+    retval =
         gpt_protective_mbr_partition_record_init_span(
             &mbr->partition_record[0], size);
+
+    /* function contract postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(
+        FAT32_SYM(gpt_protective_mbr_init_span), retval, mbr, size);
+
+    return retval;
 }
