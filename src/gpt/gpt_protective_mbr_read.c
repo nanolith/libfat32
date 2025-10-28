@@ -91,7 +91,7 @@ FAT32_SYM(gpt_protective_mbr_read)(
     mbr->signature |= ((uint16_t)bptr[1]) << 8;
 
     /* verify signature. */
-    if (mbr->signature != 0xAA55)
+    if (0xAA55 != mbr->signature)
     {
         retval = FAT32_ERROR_GPT_MBR_BAD_SIGNATURE;
         goto done;
