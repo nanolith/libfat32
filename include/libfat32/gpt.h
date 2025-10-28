@@ -337,7 +337,8 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         MODEL_ASSERT(
             (STATUS_SUCCESS == retval)
          || (FAT32_ERROR_GPT_BAD_SIZE == retval)
-         || (FAT32_ERROR_GPT_BAD_RECORD == retval));
+         || (FAT32_ERROR_GPT_BAD_RECORD == retval)
+         || (FAT32_ERROR_GPT_MBR_BAD_SIGNATURE == retval));
         /* if this method succeeds, then the record is valid. */
         if (STATUS_SUCCESS == retval)
         {
