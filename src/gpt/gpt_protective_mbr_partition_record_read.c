@@ -85,7 +85,21 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     rec->size_in_lba |= ((uint32_t)bptr[14]) << 16;
     rec->size_in_lba |= ((uint32_t)bptr[15]) << 24;
 
-    retval = STATUS_SUCCESS;
+    /* For UEFI GPT protection records, we are expecting a blank record, or a
+     * span protection record. First, check for the blank record. */
+    if (0 == rec->starting_chs)
+    {
+        retval = STATUS_SUCCESS;
+    }
+    else if (0x200 == rec->starting_chs)
+    {
+        retval = STATUS_SUCCESS;
+    }
+    else
+    {
+        retval = FAT32_ERROR_GPT_BAD_RECORD;
+    }
+
     goto done;
 
 done:
