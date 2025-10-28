@@ -49,6 +49,13 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     /* read the boot indicator. */
     rec->boot_indicator = bptr[0];
 
+    /* For UEFI GPT protection records, the boot indicator must be false. */
+    if (0 != rec->boot_indicator)
+    {
+        retval = FAT32_ERROR_GPT_BAD_RECORD;
+        goto done;
+    }
+
     /* read the starting chs as little endian. */
     rec->starting_chs = 0;
     rec->starting_chs |= ((uint32_t)bptr[1]);
