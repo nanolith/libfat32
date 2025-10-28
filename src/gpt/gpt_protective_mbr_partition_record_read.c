@@ -90,14 +90,16 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
     if (
         (0 == rec->starting_chs)
      && (0 == rec->os_type)
-     && (0 == rec->ending_chs))
+     && (0 == rec->ending_chs)
+     && (0 == rec->starting_lba))
     {
         retval = STATUS_SUCCESS;
     }
     else if (
         (0x200 == rec->starting_chs)
      && (0xEE == rec->os_type)
-     && (0x00FFFFFF == rec->ending_chs))
+     && (0x00FFFFFF == rec->ending_chs)
+     && (1 == rec->starting_lba))
     {
         retval = STATUS_SUCCESS;
     }
