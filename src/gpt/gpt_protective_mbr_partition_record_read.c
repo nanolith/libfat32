@@ -91,7 +91,8 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
         (0 == rec->starting_chs)
      && (0 == rec->os_type)
      && (0 == rec->ending_chs)
-     && (0 == rec->starting_lba))
+     && (0 == rec->starting_lba)
+     && (0 == rec->size_in_lba))
     {
         retval = STATUS_SUCCESS;
     }
@@ -99,7 +100,8 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
         (0x200 == rec->starting_chs)
      && (0xEE == rec->os_type)
      && (0x00FFFFFF == rec->ending_chs)
-     && (1 == rec->starting_lba))
+     && (1 == rec->starting_lba)
+     && (rec->size_in_lba >= 33))
     {
         retval = STATUS_SUCCESS;
     }
