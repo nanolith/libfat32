@@ -85,6 +85,13 @@ FAT32_SYM(gpt_protective_mbr_read)(
         bptr += FAT32_GPT_PROTECTIVE_MBR_PARTITION_RECORD_SIZE;
     }
 
+    /* the first partition record should be the EFI record. */
+    if (0xEE != mbr->partition_record[0].os_type)
+    {
+        retval = FAT32_ERROR_GPT_BAD_RECORD;
+        goto done;
+    }
+
     /* read the signature. */
     mbr->signature = 0;
     mbr->signature |= ((uint16_t)bptr[0]);
