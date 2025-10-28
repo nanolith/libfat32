@@ -87,11 +87,15 @@ FAT32_SYM(gpt_protective_mbr_partition_record_read)(
 
     /* For UEFI GPT protection records, we are expecting a blank record, or a
      * span protection record. First, check for the blank record. */
-    if (0 == rec->starting_chs)
+    if (
+        (0 == rec->starting_chs)
+     && (0 == rec->os_type))
     {
         retval = STATUS_SUCCESS;
     }
-    else if (0x200 == rec->starting_chs)
+    else if (
+        (0x200 == rec->starting_chs)
+     && (0xEE == rec->os_type))
     {
         retval = STATUS_SUCCESS;
     }
