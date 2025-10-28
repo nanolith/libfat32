@@ -27,7 +27,11 @@ bool FAT32_SYM(property_gpt_protective_mbr_valid)(
     MODEL_CHECK_OBJECT_READ(mbr, sizeof(*mbr));
 
     /* verify that the unique mbr disk signature is 0. */
-    if (0 != mbr->unique_disk_signature)
+    if (
+        (0 != mbr->unique_disk_signature[0])
+     || (0 != mbr->unique_disk_signature[1])
+     || (0 != mbr->unique_disk_signature[2])
+     || (0 != mbr->unique_disk_signature[3]))
     {
         return false;
     }
