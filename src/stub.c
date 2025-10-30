@@ -7,6 +7,7 @@
  * distribution for the license terms under which this software is distributed.
  */
 
+#include <libfat32/crc.h>
 #include <libfat32/gpt.h>
 #include <stdio.h>
 
