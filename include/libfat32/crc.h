@@ -26,7 +26,7 @@ extern "C" {
  *
  * \returns the CRC-32 of this section of memory.
  */
-uint32_t FAT32_SYM(crc32)(const uint8_t* data, size_t size);
+uint32_t FAT32_SYM(crc32)(const void* data, size_t size);
 
 /* C++ compatibility. */
 # ifdef   __cplusplus
