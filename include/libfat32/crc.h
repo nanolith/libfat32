@@ -38,6 +38,13 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_CHECK_OBJECT_RW(data, size);
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(crc32))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(crc32), int retval, const void* data, size_t size)
+        /* this function performs a computation over data. There are no
+         * postconditions to check beyond unit testing. */
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(crc32))
+
 /* C++ compatibility. */
 # ifdef   __cplusplus
 }
