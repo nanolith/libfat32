@@ -20,6 +20,19 @@ static const char smt_crc32_script[] = {
     ,0 /* ASCII zero this data. */
 };
 
+/**
+ * \brief The test vector generator context.
+ */
+typedef struct generator_context generator_context;
+struct generator_context
+{
+    Z3_context ctx;
+    Z3_sort bv8;
+    Z3_sort bv32;
+    Z3_sort array;
+    Z3_func_decl crc_fn;
+};
+
 /* forward decls. */
 static int context_create(Z3_context* ctx);
 
