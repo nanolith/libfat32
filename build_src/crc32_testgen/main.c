@@ -128,6 +128,15 @@ static int context_create(generator_context** ctx)
     /* we don't actually need to reference these AST values. */
     Z3_ast_vector_dec_ref(tmp->ctx, parsed);
 
+    /* create the bv8 type. */
+    tmp->bv8 = Z3_mk_bv_sort(tmp->ctx, 8);
+    if (NULL == tmp->bv8)
+    {
+        fprintf(stderr, "error: could not create BitVec 8 type.\n");
+        retval = 4;
+        goto cleanup_config;
+    }
+
     /* success. */
     *ctx = tmp;
     tmp = NULL;
