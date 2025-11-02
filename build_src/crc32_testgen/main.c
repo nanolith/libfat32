@@ -155,6 +155,15 @@ static int context_create(generator_context** ctx)
         goto cleanup_config;
     }
 
+    /* get the function name for our Z3 CRC-32 function. */
+    Z3_symbol fn_sym = Z3_mk_string_symbol(tmp->ctx, "crc-of-array");
+    if (NULL == fn_sym)
+    {
+        fprintf(stderr, "error: could not create function symbol.\n");
+        retval = 7;
+        goto cleanup_config;
+    }
+
     /* success. */
     *ctx = tmp;
     tmp = NULL;
