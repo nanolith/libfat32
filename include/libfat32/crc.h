@@ -22,6 +22,11 @@ extern "C" {
 # endif /*__cplusplus*/
 
 /**
+ * \brief Constants for the CRC-32 function.
+ */
+extern const uint32_t FAT32_SYM(crc32_constants)[256];
+
+/**
  * \brief Calculates the CRC-32 of a given section of memory.
  *
  * \param data          Data array to CRC.
