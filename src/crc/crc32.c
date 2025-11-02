@@ -20,8 +20,16 @@
  */
 uint32_t FAT32_SYM(crc32)(const void* data, size_t size)
 {
-    (void)data;
-    (void)size;
+    uint32_t crc = 0xffffffff;
 
-    return -1;
+    const uint8_t* bdata = (const uint8_t*)data;
+    for (size_t i = 0; i < size; ++i)
+    {
+        int offset = (crc ^ bdata[i]) & 0xFF;
+        crc = FAT32_SYM(crc32_constants)[offset] ^ (crc >> 8);
+    }
+
+    crc ^= 0xffffffff;
+
+    return crc;
 }
