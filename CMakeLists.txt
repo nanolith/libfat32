@@ -18,6 +18,7 @@ SET(LINKER_CHOOSER ${CMAKE_SOURCE_DIR}/scripts/linker-chooser.sh)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(minunit REQUIRED IMPORTED_TARGET minunit)
+pkg_search_module(z3 REQUIRED IMPORTED_TARGET z3)
 
 SET(C_OPTIMIZATION_OPTIONS -fPIC -O2)
 SET(C_TEST_OPTIONS -g -O0 --coverage)
