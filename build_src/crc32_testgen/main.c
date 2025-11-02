@@ -122,7 +122,7 @@ static int context_create(generator_context** ctx)
     {
         fprintf(stderr, "error: could not load reference CRC-32 script.\n");
         retval = 3;
-        goto cleanup_tmp;
+        goto cleanup_config;
     }
 
     /* we don't actually need to reference these AST values. */
