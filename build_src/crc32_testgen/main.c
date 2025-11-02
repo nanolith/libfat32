@@ -142,7 +142,7 @@ static int context_create(generator_context** ctx)
     if (NULL == tmp->bv32)
     {
         fprintf(stderr, "error: could not create BitVec 32 type.\n");
-        retval = 4;
+        retval = 5;
         goto cleanup_config;
     }
 
