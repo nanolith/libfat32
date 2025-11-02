@@ -164,6 +164,18 @@ static int context_create(generator_context** ctx)
         goto cleanup_config;
     }
 
+    /* define the parameter types. */
+    Z3_sort param_types[2] = { tmp->array, tmp->bv32 };
+
+    /* get the function declaration for our Z3 CRC-32 function. */
+    tmp->crc_fn = Z3_mk_func_decl(tmp->ctx, fn_sym, 2, param_types, tmp->bv32);
+    if (NULL == tmp->crc_fn)
+    {
+        fprintf(stderr, "error: could not create function decl.\n");
+        retval = 8;
+        goto cleanup_config;
+    }
+
     /* success. */
     *ctx = tmp;
     tmp = NULL;
