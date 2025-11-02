@@ -99,6 +99,9 @@ static int context_create(Z3_context* ctx)
         goto cleanup_context;
     }
 
+    /* we don't actually need to reference these AST values. */
+    Z3_ast_vector_dec_ref(tmp, parsed);
+
     /* success. */
     *ctx = tmp;
     retval = 0;
