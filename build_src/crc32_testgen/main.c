@@ -206,5 +206,6 @@ static void context_release(generator_context* ctx)
     {
         Z3_del_context(ctx->ctx);
     }
+
     free(ctx);
 }
