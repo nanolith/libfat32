@@ -8,7 +8,9 @@
  * distribution for the license terms under which this software is distributed.
  */
 
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <z3.h>
 
 /**
@@ -34,7 +36,8 @@ struct generator_context
 };
 
 /* forward decls. */
-static int context_create(Z3_context* ctx);
+static int context_create(generator_context** ctx);
+static void context_release(generator_context* ctx);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -50,7 +53,7 @@ int main(int argc, char* argv[])
     (void)argv;
 
     int retval;
-    Z3_context ctx;
+    generator_context* ctx;
 
     /* create the context and load the script. */
     retval = context_create(&ctx);
@@ -63,7 +66,7 @@ int main(int argc, char* argv[])
     goto cleanup_ctx;
 
 cleanup_ctx:
-    Z3_del_context(ctx);
+    context_release(ctx);
 
 done:
     return retval;
@@ -76,12 +79,22 @@ done:
  *
  * \returns 0 on success and non-zero on failure.
  */
-static int context_create(Z3_context* ctx)
+static int context_create(generator_context** ctx)
 {
     int retval;
+    generator_context* tmp;
     Z3_config cfg;
-    Z3_context tmp;
     Z3_ast_vector parsed;
+
+    /* allocate memory for the context. */
+    tmp = (generator_context*)malloc(sizeof(*tmp));
+    if (NULL == tmp)
+    {
+        fprintf(stderr, "error: could not allocate generator context.\n");
+        retval = 1;
+        goto done;
+    }
+    memset(tmp, 0, sizeof(*tmp));
 
     /* create the config. */
     cfg = Z3_mk_config();
@@ -89,12 +102,12 @@ static int context_create(Z3_context* ctx)
     {
         fprintf(stderr, "error: could not create Z3 config.\n");
         retval = 1;
-        goto done;
+        goto cleanup_tmp;
     }
 
     /* create the context. */
-    tmp = Z3_mk_context(cfg);
-    if (NULL == tmp)
+    tmp->ctx = Z3_mk_context(cfg);
+    if (NULL == tmp->ctx)
     {
         fprintf(stderr, "error: could not create Z3 context.\n");
         retval = 2;
@@ -104,28 +117,46 @@ static int context_create(Z3_context* ctx)
     /* parse the input. */
     parsed =
         Z3_parse_smtlib2_string(
-            tmp, smt_crc32_script, 0, NULL, NULL, 0, NULL, NULL);
+            tmp->ctx, smt_crc32_script, 0, NULL, NULL, 0, NULL, NULL);
     if (NULL == parsed)
     {
         fprintf(stderr, "error: could not load reference CRC-32 script.\n");
         retval = 3;
-        goto cleanup_context;
+        goto cleanup_tmp;
     }
 
     /* we don't actually need to reference these AST values. */
-    Z3_ast_vector_dec_ref(tmp, parsed);
+    Z3_ast_vector_dec_ref(tmp->ctx, parsed);
 
     /* success. */
     *ctx = tmp;
+    tmp = NULL;
     retval = 0;
     goto cleanup_config;
-
-cleanup_context:
-    Z3_del_context(tmp);
 
 cleanup_config:
     Z3_del_config(cfg);
 
+cleanup_tmp:
+    if (NULL != tmp)
+    {
+        context_release(tmp);
+    }
+
 done:
     return retval;
+}
+
+/**
+ * \brief Release a context.
+ *
+ * \param ctx           The context to release.
+ */
+static void context_release(generator_context* ctx)
+{
+    if (NULL != ctx->ctx)
+    {
+        Z3_del_context(ctx->ctx);
+    }
+    free(ctx);
 }
