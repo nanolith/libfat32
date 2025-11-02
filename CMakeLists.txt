@@ -85,5 +85,8 @@ INSTALL(TARGETS fat32
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
+#build tools
+ADD_SUBDIRECTORY(build_src)
+
 #model checks
 ADD_SUBDIRECTORY(models)
