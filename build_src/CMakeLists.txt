@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY(crc32_constants)
+ADD_SUBDIRECTORY(crc32_testgen)
