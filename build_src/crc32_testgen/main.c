@@ -138,8 +138,8 @@ static int context_create(generator_context** ctx)
     }
 
     /* create the bv32 type. */
-    tmp->bv8 = Z3_mk_bv_sort(tmp->ctx, 32);
-    if (NULL == tmp->bv8)
+    tmp->bv32 = Z3_mk_bv_sort(tmp->ctx, 32);
+    if (NULL == tmp->bv32)
     {
         fprintf(stderr, "error: could not create BitVec 32 type.\n");
         retval = 4;
