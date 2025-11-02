@@ -22,14 +22,26 @@
  */
 int main(int argc, char* argv[])
 {
-    (void)argc;
-    (void)argv;
+    /* verify that we have an output file. */
+    if (argc != 2)
+    {
+        fprintf(stderr, "Expecting one argument, the output filename.\n");
+        return 1;
+    }
+
+    /* open the output file for writing. */
+    FILE* out = fopen(argv[1], "w");
+    if (NULL == out)
+    {
+        fprintf(stderr, "Could not open %s for writing.\n", argv[1]);
+        return 2;
+    }
 
     /* front matter. */
-    printf("#include <libfat32/crc.h>\n\n");
+    fprintf(out, "#include <libfat32/crc.h>\n\n");
 
     /* begin the constant array. */
-    printf("const uint32_t FAT32_SYM(crc32_constants)[256] = {");
+    fprintf(out, "const uint32_t FAT32_SYM(crc32_constants)[256] = {");
 
     for (uint32_t i = 0; i < 256; ++i)
     {
@@ -39,7 +51,7 @@ int main(int argc, char* argv[])
         /* ensure that the constants respect the 80 column rule. */
         if (0 == (i % 6))
         {
-            printf("\n    ");
+            fprintf(out, "\n    ");
         }
 
         /* iterate over each bit. */
@@ -58,11 +70,14 @@ int main(int argc, char* argv[])
         }
 
         /* emit the completed constant to the C source file. */
-        printf("0x%08x, ", c);
+        fprintf(out, "0x%08x, ", c);
     }
 
     /* terminate the array. */
-    printf("\n};\n");
+    fprintf(out, "\n};\n");
+
+    /* close the output file. */
+    fclose(out);
 
     return 0;
 }
