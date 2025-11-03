@@ -38,6 +38,8 @@ struct generator_context
 /* forward decls. */
 static int context_create(generator_context** ctx);
 static void context_release(generator_context* ctx);
+static Z3_ast mk_bv_from_uint64(
+    generator_context* ctx, unsigned int bits, uint64_t value);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -63,6 +65,7 @@ int main(int argc, char* argv[])
     }
 
     /* TODO - implement. */
+    (void)mk_bv_from_uint64;
     goto cleanup_ctx;
 
 cleanup_ctx:
@@ -208,4 +211,40 @@ static void context_release(generator_context* ctx)
     }
 
     free(ctx);
+}
+
+/**
+ * \brief Create a bit-vector numeral from a uint64_t value and a bit length.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param bits          The bit length of this bit vector.
+ * \param value         The uint64_t value to encode as a bit vector.
+ *
+ * \returns the bit vector, as a Z3_ast, or NULL if this conversion failed.
+ */
+static Z3_ast mk_bv_from_uint64(
+    generator_context* ctx, unsigned int bits, uint64_t value)
+{
+    bool bit_array[64];
+
+    /* for our purposes, an empty bit vector is meaningless. */
+    if (0 == bits)
+    {
+        return NULL;
+    }
+
+    /* encode bits. */
+    for (unsigned int i = 0; i < bits; ++i)
+    {
+        /* the bits array is big-endian, so we start from the MSB back. */
+        unsigned int index = (bits - 1) + i;
+
+        /* convert this bit in the value into a boolean in the array. */
+        bit_array[i] =
+            ((value >> index) & 1)
+                ? true
+                : false;
+    }
+
+    return Z3_mk_bv_numeral(ctx->ctx, bits, bit_array);
 }
