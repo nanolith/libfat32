@@ -8,6 +8,7 @@
  * distribution for the license terms under which this software is distributed.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,6 +41,8 @@ static int context_create(generator_context** ctx);
 static void context_release(generator_context* ctx);
 static Z3_ast mk_bv_from_uint64(
     generator_context* ctx, unsigned int bits, uint64_t value);
+static int canonical_crc(
+    uint32_t* result, generator_context* ctx, const void* data, size_t size);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -64,8 +67,24 @@ int main(int argc, char* argv[])
         goto done;
     }
 
-    /* TODO - implement. */
-    (void)mk_bv_from_uint64;
+    /* run a canonical crc on our basic test vector. */
+    uint32_t test_result = 0;
+    retval = canonical_crc(&test_result, ctx, "123456789", 9);
+    if (0 != retval)
+    {
+        goto cleanup_ctx;
+    }
+
+    /* verify that this matches. */
+    if (0xcbf43926 != test_result)
+    {
+        printf("Expected 0x%08x and got 0x%08x.\n", 0xcbf43926, test_result);
+        retval = 1;
+        goto cleanup_ctx;
+    }
+
+    /* TODO - fill out generation part. */
+    retval = 0;
     goto cleanup_ctx;
 
 cleanup_ctx:
@@ -236,15 +255,194 @@ static Z3_ast mk_bv_from_uint64(
     /* encode bits. */
     for (unsigned int i = 0; i < bits; ++i)
     {
-        /* the bits array is big-endian, so we start from the MSB back. */
-        unsigned int index = (bits - 1) + i;
-
         /* convert this bit in the value into a boolean in the array. */
-        bit_array[i] =
-            ((value >> index) & 1)
-                ? true
-                : false;
+        if ((value >> i) & 1)
+        {
+            bit_array[i] = true;
+        }
+        else
+        {
+            bit_array[i] = false;
+        }
     }
 
     return Z3_mk_bv_numeral(ctx->ctx, bits, bit_array);
+}
+
+/**
+ * \brief Perform a canonical CRC-32, using the Z3 source.
+ *
+ * \param result            On success, the result is stored here.
+ * \param ctx               The context for creating the solver for this
+ *                          invocation.
+ * \param data              The data on which this CRC is performed.
+ * \param size              The size of this data in bytes.
+ *
+ * \returns the CRC-32 of this data.
+ */
+static int canonical_crc(
+    uint32_t* result, generator_context* ctx, const void* data, size_t size)
+{
+    int retval;
+    Z3_solver s;
+    Z3_model m;
+
+    /* make working with this data more convenient. */
+    const uint8_t* bdata = (const uint8_t*)data;
+
+    /* create a solver instance for running this computation. */
+    s = Z3_mk_solver(ctx->ctx);
+    if (NULL == s)
+    {
+        fprintf(stderr, "Could not create Z3 solver instance.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* we will initialize our array with zeroes. */
+    Z3_ast v_zero = mk_bv_from_uint64(ctx, 8, 0);
+    if (NULL == v_zero)
+    {
+        fprintf(stderr, "Could not create constant zero.\n");
+        retval = 2;
+        goto cleanup_s;
+    }
+
+    /* create a data array for holding our input data. */
+    Z3_ast input_array = Z3_mk_const_array(ctx->ctx, ctx->bv32, v_zero);
+    if (NULL == input_array)
+    {
+        fprintf(stderr, "Could not create input array.\n");
+        retval = 3;
+        goto cleanup_s;
+    }
+
+    /* populate this array. */
+    for (size_t i = 0; i < size; ++i)
+    {
+        /* create the store index. */
+        Z3_ast idx = mk_bv_from_uint64(ctx, 32, i);
+        if (NULL == idx)
+        {
+            fprintf(stderr, "Could not create store index.\n");
+            retval = 4;
+            goto cleanup_s;
+        }
+
+        /* create the value to store at this array index. */
+        Z3_ast value = mk_bv_from_uint64(ctx, 8, bdata[i]);
+        if (NULL == value)
+        {
+            fprintf(stderr, "Could not create store value.\n");
+            retval = 5;
+            goto cleanup_s;
+        }
+
+        /* create the store. */
+        input_array = Z3_mk_store(ctx->ctx, input_array, idx, value);
+        if (NULL == input_array)
+        {
+            fprintf(stderr, "Could not update input array.\n");
+            retval = 6;
+            goto cleanup_s;
+        }
+    }
+
+    /* create the input length. */
+    Z3_ast length = mk_bv_from_uint64(ctx, 32, size);
+    if (NULL == length)
+    {
+        fprintf(stderr, "Could not create input array length.\n");
+        retval = 7;
+        goto cleanup_s;
+    }
+
+    /* create the function invocation. */
+    Z3_ast args[2] = { input_array, length };
+    Z3_ast fn_call = Z3_mk_app(ctx->ctx, ctx->crc_fn, 2, args);
+    if (NULL == fn_call)
+    {
+        fprintf(stderr, "Could not create function call.\n");
+        retval = 0;
+        goto cleanup_s;
+    }
+
+    /* create the result variable. */
+    Z3_ast crc_result = Z3_mk_fresh_const(ctx->ctx, "result", ctx->bv32);
+    if (NULL == crc_result)
+    {
+        fprintf(stderr, "Could not make result constant.\n");
+        retval = 9;
+        goto cleanup_s;
+    }
+
+    /* create the equality portion of the assertion. */
+    Z3_ast eq = Z3_mk_eq(ctx->ctx, crc_result, fn_call);
+    if (NULL == eq)
+    {
+        fprintf(stderr, "Could not make equality.\n");
+        retval = 10;
+        goto cleanup_s;
+    }
+
+    /* make the assertion. */
+    Z3_solver_assert(ctx->ctx, s, eq);
+
+    printf("Trace: %s\n", Z3_ast_to_string(ctx->ctx, eq));
+
+    /* check for satisfiability. */
+    if (Z3_L_TRUE != Z3_solver_check(ctx->ctx, s))
+    {
+        fprintf(stderr, "Could not get satisfiability for CRC calculation.\n");
+        retval = 11;
+        goto cleanup_s;
+    }
+
+    /* get the model of the solution. */
+    m = Z3_solver_get_model(ctx->ctx, s);
+    if (NULL == m)
+    {
+        fprintf(stderr, "Could not get model.\n");
+        retval = 12;
+        goto cleanup_s;
+    }
+
+    /* get the result value. */
+    Z3_ast result_ast;
+    if (!Z3_model_eval(ctx->ctx, m, crc_result, true, &result_ast))
+    {
+        fprintf(stderr, "Could not resolve CRC value via model.\n");
+        retval = 13;
+        goto cleanup_m;
+    }
+
+    /* is this a numeral value? */
+    if (Z3_get_ast_kind(ctx->ctx, result_ast) != Z3_NUMERAL_AST)
+    {
+        fprintf(stderr, "Unexpected kind.\n");
+        retval = 14;
+        goto cleanup_m;
+    }
+
+    /* get the result as a numeral. */
+    uint64_t numeral_result;
+    if (!Z3_get_numeral_uint64(ctx->ctx, result_ast, &numeral_result))
+    {
+        fprintf(stderr, "Could not resolve CRC result as a numeral.\n");
+        retval = 14;
+        goto cleanup_m;
+    }
+
+    *result = numeral_result;
+    retval = 0;
+    goto cleanup_m;
+
+cleanup_m:
+    Z3_model_dec_ref(ctx->ctx, m);
+
+cleanup_s:
+    Z3_solver_dec_ref(ctx->ctx, s);
+
+done:
+    return retval;
 }
