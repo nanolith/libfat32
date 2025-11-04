@@ -43,6 +43,8 @@ static Z3_ast mk_bv_from_uint64(
     generator_context* ctx, unsigned int bits, uint64_t value);
 static int canonical_crc(
     uint32_t* result, generator_context* ctx, const void* data, size_t size);
+static int crc_bit_step_function_create(
+    Z3_ast* fn, generator_context* ctx, Z3_ast crc_in);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -146,6 +148,8 @@ static int context_create(generator_context** ctx)
         retval = 3;
         goto cleanup_config;
     }
+
+    (void)crc_bit_step_function_create;
 
     /* we don't actually need to reference these AST values. */
     Z3_ast_vector_dec_ref(tmp->ctx, parsed);
@@ -442,6 +446,116 @@ cleanup_m:
 
 cleanup_s:
     Z3_solver_dec_ref(ctx->ctx, s);
+
+done:
+    return retval;
+}
+
+/**
+ * \brief Create the equivalent to the crc-bit-step function used to build the
+ * crc-byte-step function.
+ *
+ * \param fn            Pointer to the AST node to set to this ast definition.
+ * \param ctx           The context to use for this operation.
+ * \param crc_in        The CRC input parameter for this shift.
+ *
+ * \code
+ *
+ * (define-fun crc-bit-step ((crc-in (_ BitVec 32))) (_ BitVec 32)
+ *   (let ((shifted (bvlshr crc-in bv-one-32)))
+ *     (let ((bitval ((_ extract 0 0) crc-in)))
+ *       (ite (= bitval #b1)
+ *         (bvxor shifted poly)
+ *         shifted))))
+ *
+ * \endcode
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int crc_bit_step_function_create(
+    Z3_ast* fn, generator_context* ctx, Z3_ast crc_in)
+{
+    int retval;
+
+    /* create the polynomial constant. */
+    Z3_ast polynomial = mk_bv_from_uint64(ctx, 32, 0xedb88320);
+    if (NULL == polynomial)
+    {
+        fprintf(stderr, "error: could not make polynomial constant.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* create the 32-bit one constant. */
+    Z3_ast one_u32 = mk_bv_from_uint64(ctx, 32, 1);
+    if (NULL == one_u32)
+    {
+        fprintf(stderr, "error: could not make 32-bit one constant.\n");
+        retval = 2;
+        goto done;
+    }
+
+    /* create the 1-bit one constant. */
+    Z3_ast one_u1 = mk_bv_from_uint64(ctx, 1, 1);
+    if (NULL == one_u1)
+    {
+        fprintf(stderr, "error: could not make 1-bit one constant.\n");
+        retval = 3;
+        goto done;
+    }
+
+    /* right shift the CRC input by one. */
+    Z3_ast shift_op = Z3_mk_bvlshr(ctx->ctx, crc_in, one_u32);
+    if (NULL == shift_op)
+    {
+        fprintf(stderr, "error: could not make shift operation.\n");
+        retval = 4;
+        goto done;
+    }
+
+    /* get the least-significant bit. */
+    Z3_ast lsb = Z3_mk_extract(ctx->ctx, 0, 0, crc_in);
+    if (NULL == lsb)
+    {
+        fprintf(stderr, "error: could not extract lsb.\n");
+        retval = 4;
+        goto done;
+    }
+
+    /* create the comparison. */
+    Z3_ast cmp = Z3_mk_eq(ctx->ctx, lsb, one_u1);
+    if (NULL == cmp)
+    {
+        fprintf(stderr, "error: could not make comparison.\n");
+        retval = 5;
+        goto done;
+    }
+
+    /* create the "then" branch. */
+    Z3_ast then_branch = Z3_mk_bvxor(ctx->ctx, shift_op, polynomial);
+    if (NULL == then_branch)
+    {
+        fprintf(stderr, "error: could not make then branch.\n");
+        retval = 6;
+        goto done;
+    }
+
+    /* create the "else" branch. */
+    Z3_ast else_branch = shift_op;
+
+    /* make the if-then-else expression. */
+    Z3_ast ite_expr = Z3_mk_ite(ctx->ctx, cmp, then_branch, else_branch);
+    if (NULL == ite_expr)
+    {
+        fprintf(stderr, "error: could not make if-the-else expression.\n");
+        retval = 7;
+        goto done;
+    }
+
+    /* success. */
+    *fn = ite_expr;
+    retval = 0;
+    goto done;
 
 done:
     return retval;
