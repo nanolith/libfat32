@@ -43,7 +43,7 @@ static Z3_ast mk_bv_from_uint64(
     generator_context* ctx, unsigned int bits, uint64_t value);
 static int canonical_crc(
     uint32_t* result, generator_context* ctx, const void* data, size_t size);
-static int crc_bit_step_function_create(
+static int crc_bit_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in);
 
 /**
@@ -149,7 +149,7 @@ static int context_create(generator_context** ctx)
         goto cleanup_config;
     }
 
-    (void)crc_bit_step_function_create;
+    (void)crc_bit_step_block_create;
 
     /* we don't actually need to reference these AST values. */
     Z3_ast_vector_dec_ref(tmp->ctx, parsed);
@@ -452,8 +452,8 @@ done:
 }
 
 /**
- * \brief Create the equivalent to the crc-bit-step function used to build the
- * crc-byte-step function.
+ * \brief Create a block of code equivalent to the crc-bit-step function used to
+ * build the crc-byte-step function.
  *
  * \param fn            Pointer to the AST node to set to this ast definition.
  * \param ctx           The context to use for this operation.
@@ -472,7 +472,7 @@ done:
  *
  * \returns 0 on success and non-zero on failure.
  */
-static int crc_bit_step_function_create(
+static int crc_bit_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in)
 {
     int retval;
