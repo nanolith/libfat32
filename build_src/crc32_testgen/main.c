@@ -45,6 +45,8 @@ static int canonical_crc(
     uint32_t* result, generator_context* ctx, const void* data, size_t size);
 static int crc_bit_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in);
+static int crc_byte_step_block_create(
+    Z3_ast* fn, generator_context* ctx, Z3_ast crc_in, Z3_ast byte_in);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -150,6 +152,7 @@ static int context_create(generator_context** ctx)
     }
 
     (void)crc_bit_step_block_create;
+    (void)crc_byte_step_block_create;
 
     /* we don't actually need to reference these AST values. */
     Z3_ast_vector_dec_ref(tmp->ctx, parsed);
@@ -555,6 +558,75 @@ static int crc_bit_step_block_create(
     /* success. */
     *fn = ite_expr;
     retval = 0;
+    goto done;
+
+done:
+    return retval;
+}
+
+/**
+ * \brief Create a block of code equivalent to the crc-byte-step function used
+ * to build the crc-recursive-loop function.
+ *
+ * \param fn            Pointer to the AST node to set to this ast definition.
+ * \param ctx           The context to use for this operation.
+ * \param crc_in        The CRC input parameter for this step.
+ * \param byte_in       The byte input parameter for this step.
+ *
+ * \code
+ *
+ * (define-fun crc-byte-step
+ *         ((crc-in (_ BitVec 32)) (byte-in-8b (_ BitVec 8))) (_ BitVec 32)
+ *   (let ((s0 (bvxor crc-in ((_ zero_extend 24) byte-in-8b))))
+ *     (let ((s1 (crc-bit-step s0)))
+ *       (let ((s2 (crc-bit-step s1)))
+ *         (let ((s3 (crc-bit-step s2)))
+ *           (let ((s4 (crc-bit-step s3)))
+ *             (let ((s5 (crc-bit-step s4)))
+ *               (let ((s6 (crc-bit-step s5)))
+ *                 (let ((s7 (crc-bit-step s6)))
+ *                   (let ((s8 (crc-bit-step s7)))
+ *                     s8))))))))))
+ *
+ * \endcode
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int crc_byte_step_block_create(
+    Z3_ast* fn, generator_context* ctx, Z3_ast crc_in, Z3_ast byte_in)
+{
+    int retval;
+
+    /* zero-extend the input byte. */
+    Z3_ast zero_extend = Z3_mk_zero_ext(ctx->ctx, 24, byte_in);
+    if (NULL == zero_extend)
+    {
+        fprintf(stderr, "error: could not make zero-extend expression.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* s0: xor the zero-extended byte and the crc input. */
+    Z3_ast s = Z3_mk_bvxor(ctx->ctx, crc_in, zero_extend);
+    if (NULL == s)
+    {
+        fprintf(stderr, "error: could not make s0 expression.\n");
+        retval = 2;
+        goto done;
+    }
+
+    /* perform the crc bit step on each bit of this byte. */
+    for (int i = 0; i < 8; ++i)
+    {
+        retval = crc_bit_step_block_create(&s, ctx, s);
+        if (0 != retval)
+        {
+            goto done;
+        }
+    }
+
+    /* success. */
+    *fn = s;
     goto done;
 
 done:
