@@ -49,6 +49,7 @@ static int crc_byte_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in, Z3_ast byte_in);
 static int crc_recursive_loop_function_create(
     Z3_func_decl* fn, generator_context* ctx);
+static int crc_function_create(generator_context* ctx);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -186,6 +187,7 @@ static int context_create(generator_context** ctx)
     (void)crc_bit_step_block_create;
     (void)crc_byte_step_block_create;
     (void)crc_recursive_loop_function_create;
+    (void)crc_function_create;
 
     /* get the function name for our Z3 CRC-32 function. */
     Z3_symbol fn_sym = Z3_mk_string_symbol(tmp->ctx, "crc-of-array");
@@ -809,6 +811,127 @@ static int crc_recursive_loop_function_create(
     /* success. */
     retval = 0;
     *fn = loop_decl;
+    goto done;
+
+done:
+    return retval;
+}
+
+/**
+ * \brief Create a CRC-32 function using the Z3 API.
+ *
+ * \param ctx           The context for this operation.
+ *
+ * \code
+ *
+ * (define-fun crc-of-array
+ *         ((data (Array (_ BitVec 32) (_ BitVec 8))) (len (_ BitVec 32)))
+ *         (_ BitVec 32)
+ *   (let ((intermediate-crc
+ *              (crc-recursive-loop data len #x00000000 initial-val)))
+ *     (bvxor intermediate-crc final-xor)))
+ *
+ * \endcode
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int crc_function_create(generator_context* ctx)
+{
+    int retval;
+
+    /* create the function name symbol. */
+    Z3_symbol fn_sym = Z3_mk_string_symbol(ctx->ctx, "crc-of-array");
+    if (NULL == fn_sym)
+    {
+        fprintf(stderr, "error: could not create function symbol.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* create the parameter types (domain) for the function. */
+    Z3_sort fn_domain[2] = { ctx->array, ctx->bv32 };
+
+    /* create the function declaration. */
+    Z3_func_decl fn_decl =
+        Z3_mk_func_decl(ctx->ctx, fn_sym, 2, fn_domain, ctx->bv32);
+    if (NULL == fn_decl)
+    {
+        fprintf(stderr, "error: could not create function declaration.\n");
+        retval = 2;
+        goto done;
+    }
+
+    /* first argument. */
+    Z3_ast arg_data = Z3_mk_bound(ctx->ctx, 1, ctx->array);
+    if (NULL == arg_data)
+    {
+        fprintf(stderr, "error: could not create first argument.\n");
+        retval = 3;
+        goto done;
+    }
+
+    /* second argument. */
+    Z3_ast arg_len = Z3_mk_bound(ctx->ctx, 0, ctx->bv32);
+    if (NULL == arg_len)
+    {
+        fprintf(stderr, "error: could not create second argument.\n");
+        retval = 4;
+        goto done;
+    }
+
+    /* create zero constant. */
+    Z3_ast c0 = mk_bv_from_uint64(ctx, 32, 0);
+    if (NULL == c0)
+    {
+        fprintf(stderr, "error: could not create zero constant.\n");
+        retval = 5;
+        goto done;
+    }
+
+    /* create 0xffffffff value. */
+    Z3_ast cff = mk_bv_from_uint64(ctx, 32, 0xFFFFFFFF);
+    if (NULL == cff)
+    {
+        fprintf(stderr, "error: could not create 0xffffffff constant.\n");
+        retval = 6;
+        goto done;
+    }
+
+    /* create the loop function. */
+    Z3_func_decl loop_fn;
+    retval = crc_recursive_loop_function_create(&loop_fn, ctx);
+    if (NULL == loop_fn)
+    {
+        goto done;
+    }
+
+    /* call the loop function. */
+    Z3_ast loop_fn_args[4] = { arg_data, arg_len, c0, cff };
+    Z3_ast loop_fn_result = Z3_mk_app(ctx->ctx, loop_fn, 4, loop_fn_args);
+    if (NULL == loop_fn_result)
+    {
+        fprintf(stderr, "error: could not call loop function.\n");
+        retval = 7;
+        goto done;
+    }
+
+    /* create the function body. */
+    Z3_ast fn_body = Z3_mk_bvxor(ctx->ctx, loop_fn_result, cff);
+    if (NULL == fn_body)
+    {
+        fprintf(stderr, "error: could not create function body.\n");
+        retval = 8;
+        goto done;
+    }
+
+    /* create the function definition. */
+    Z3_ast fn_args[2] = { arg_data, arg_len };
+    Z3_add_rec_def(ctx->ctx, fn_decl, 2, fn_args, fn_body);
+    /* TODO - check result. */
+
+    /* success. */
+    ctx->crc_fn = fn_decl;
+    retval = 0;
     goto done;
 
 done:
