@@ -216,7 +216,7 @@ static Z3_ast mk_bv_from_uint64(
     bool bit_array[64];
 
     /* for our purposes, an empty bit vector is meaningless. */
-    if (0 == bits)
+    if (0 == bits || bits > 64)
     {
         return NULL;
     }
