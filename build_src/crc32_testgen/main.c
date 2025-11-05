@@ -15,15 +15,6 @@
 #include <z3.h>
 
 /**
- * \brief This is the SMT-LIB implementation of the bit-wise CRC-32 which we use
- * to derive our test vectors.
- */
-static const char smt_crc32_script[] = {
-#embed "crc32.smt2"
-    ,0 /* ASCII zero this data. */
-};
-
-/**
  * \brief The test vector generator context.
  */
 typedef struct generator_context generator_context;
@@ -113,8 +104,6 @@ static int context_create(generator_context** ctx)
     int retval;
     generator_context* tmp;
     Z3_config cfg;
-
-    (void)smt_crc32_script;
 
     /* allocate memory for the context. */
     tmp = (generator_context*)malloc(sizeof(*tmp));
