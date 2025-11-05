@@ -357,8 +357,6 @@ static int canonical_crc(
     /* make the assertion. */
     Z3_solver_assert(ctx->ctx, s, eq);
 
-    printf("Trace: %s\n", Z3_ast_to_string(ctx->ctx, eq));
-
     /* check for satisfiability. */
     if (Z3_L_TRUE != Z3_solver_check(ctx->ctx, s))
     {
@@ -410,7 +408,8 @@ cleanup_m:
     Z3_model_dec_ref(ctx->ctx, m);
 
 cleanup_s:
-    Z3_solver_dec_ref(ctx->ctx, s);
+    /* XXX - for some reason, this causes heap corruption. */
+    //Z3_solver_dec_ref(ctx->ctx, s);
 
 done:
     return retval;
