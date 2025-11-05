@@ -113,7 +113,8 @@ static int context_create(generator_context** ctx)
     int retval;
     generator_context* tmp;
     Z3_config cfg;
-    Z3_ast_vector parsed;
+
+    (void)smt_crc32_script;
 
     /* allocate memory for the context. */
     tmp = (generator_context*)malloc(sizeof(*tmp));
@@ -130,7 +131,7 @@ static int context_create(generator_context** ctx)
     if (NULL == cfg)
     {
         fprintf(stderr, "error: could not create Z3 config.\n");
-        retval = 1;
+        retval = 2;
         goto cleanup_tmp;
     }
 
@@ -139,23 +140,9 @@ static int context_create(generator_context** ctx)
     if (NULL == tmp->ctx)
     {
         fprintf(stderr, "error: could not create Z3 context.\n");
-        retval = 2;
-        goto cleanup_config;
-    }
-
-    /* parse the input. */
-    parsed =
-        Z3_parse_smtlib2_string(
-            tmp->ctx, smt_crc32_script, 0, NULL, NULL, 0, NULL, NULL);
-    if (NULL == parsed)
-    {
-        fprintf(stderr, "error: could not load reference CRC-32 script.\n");
         retval = 3;
         goto cleanup_config;
     }
-
-    /* we don't actually need to reference these AST values. */
-    Z3_ast_vector_dec_ref(tmp->ctx, parsed);
 
     /* create the bv8 type. */
     tmp->bv8 = Z3_mk_bv_sort(tmp->ctx, 8);
@@ -184,29 +171,10 @@ static int context_create(generator_context** ctx)
         goto cleanup_config;
     }
 
-    (void)crc_bit_step_block_create;
-    (void)crc_byte_step_block_create;
-    (void)crc_recursive_loop_function_create;
-    (void)crc_function_create;
-
-    /* get the function name for our Z3 CRC-32 function. */
-    Z3_symbol fn_sym = Z3_mk_string_symbol(tmp->ctx, "crc-of-array");
-    if (NULL == fn_sym)
+    /* create the crc function. */
+    retval = crc_function_create(tmp);
+    if (0 != retval)
     {
-        fprintf(stderr, "error: could not create function symbol.\n");
-        retval = 7;
-        goto cleanup_config;
-    }
-
-    /* define the parameter types. */
-    Z3_sort param_types[2] = { tmp->array, tmp->bv32 };
-
-    /* get the function declaration for our Z3 CRC-32 function. */
-    tmp->crc_fn = Z3_mk_func_decl(tmp->ctx, fn_sym, 2, param_types, tmp->bv32);
-    if (NULL == tmp->crc_fn)
-    {
-        fprintf(stderr, "error: could not create function decl.\n");
-        retval = 8;
         goto cleanup_config;
     }
 
@@ -853,7 +821,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* create the function declaration. */
     Z3_func_decl fn_decl =
-        Z3_mk_func_decl(ctx->ctx, fn_sym, 2, fn_domain, ctx->bv32);
+        Z3_mk_rec_func_decl(ctx->ctx, fn_sym, 2, fn_domain, ctx->bv32);
     if (NULL == fn_decl)
     {
         fprintf(stderr, "error: could not create function declaration.\n");
@@ -898,7 +866,7 @@ static int crc_function_create(generator_context* ctx)
     }
 
     /* create the loop function. */
-    Z3_func_decl loop_fn;
+    Z3_func_decl loop_fn = NULL;
     retval = crc_recursive_loop_function_create(&loop_fn, ctx);
     if (NULL == loop_fn)
     {
