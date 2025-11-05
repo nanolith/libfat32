@@ -47,6 +47,8 @@ static int crc_bit_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in);
 static int crc_byte_step_block_create(
     Z3_ast* fn, generator_context* ctx, Z3_ast crc_in, Z3_ast byte_in);
+static int crc_recursive_loop_function_create(
+    Z3_func_decl* fn, generator_context* ctx);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -151,9 +153,6 @@ static int context_create(generator_context** ctx)
         goto cleanup_config;
     }
 
-    (void)crc_bit_step_block_create;
-    (void)crc_byte_step_block_create;
-
     /* we don't actually need to reference these AST values. */
     Z3_ast_vector_dec_ref(tmp->ctx, parsed);
 
@@ -183,6 +182,10 @@ static int context_create(generator_context** ctx)
         retval = 6;
         goto cleanup_config;
     }
+
+    (void)crc_bit_step_block_create;
+    (void)crc_byte_step_block_create;
+    (void)crc_recursive_loop_function_create;
 
     /* get the function name for our Z3 CRC-32 function. */
     Z3_symbol fn_sym = Z3_mk_string_symbol(tmp->ctx, "crc-of-array");
@@ -627,6 +630,185 @@ static int crc_byte_step_block_create(
 
     /* success. */
     *fn = s;
+    goto done;
+
+done:
+    return retval;
+}
+
+/**
+ * \brief Create the CRC recursive loop function, returning the function
+ * declaration as an output parameter.
+ *
+ * \param fn                Pointer to the function decl pointer to receive this
+ *                          function on success.
+ * \param ctx               The context for this operation.
+ *
+ * \code
+ *
+ * (define-fun-rec crc-recursive-loop
+ *   (
+ *     (data (Array (_ BitVec 32) (_ BitVec 8))) ; input array
+ *     (len (_ BitVec 32))                       ; length
+ *     (idx (_ BitVec 32))                       ; current index
+ *     (crc-in (_ BitVec 32))                    ; current crc state
+ *   )
+ *   (_ BitVec 32)
+ *
+ *   (ite (bvuge idx len)
+ *         ; base case
+ *         crc-in
+ *
+ *         ; recursive case
+ *         (crc-recursive-loop
+ *           data
+ *           len
+ *           (bvadd idx #x00000001)
+ *           (crc-byte-step crc-in (select data idx)))))
+ *
+ * \endcode
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int crc_recursive_loop_function_create(
+    Z3_func_decl* fn, generator_context* ctx)
+{
+    int retval;
+
+    /* create the recursive loop function symbol. */
+    Z3_symbol loop_sym = Z3_mk_string_symbol(ctx->ctx, "crc-recursive-loop");
+    if (NULL == loop_sym)
+    {
+        fprintf(stderr, "error: could not create loop function symbol.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* create the function domain. */
+    Z3_sort loop_domain[4] = { ctx->array, ctx->bv32, ctx->bv32, ctx->bv32 };
+
+    /* create the function declaration. */
+    Z3_func_decl loop_decl =
+        Z3_mk_rec_func_decl(ctx->ctx, loop_sym, 4, loop_domain, ctx->bv32);
+    if (NULL == loop_decl)
+    {
+        fprintf(stderr, "error: could not create loop function decl.\n");
+        retval = 2;
+        goto done;
+    }
+
+    /* create the data argument binding. */
+    Z3_ast arg_data = Z3_mk_bound(ctx->ctx, 3, ctx->array);
+    if (NULL == arg_data)
+    {
+        fprintf(stderr, "error: could not create data array argument.\n");
+        retval = 3;
+        goto done;
+    }
+
+    /* create the len argument binding. */
+    Z3_ast arg_len = Z3_mk_bound(ctx->ctx, 2, ctx->bv32);
+    if (NULL == arg_len)
+    {
+        fprintf(stderr, "error: could not create len argument.\n");
+        retval = 4;
+        goto done;
+    }
+
+    /* create the idx argument binding. */
+    Z3_ast arg_idx = Z3_mk_bound(ctx->ctx, 1, ctx->bv32);
+    if (NULL == arg_idx)
+    {
+        fprintf(stderr, "error: could not create idx argument.\n");
+        retval = 5;
+        goto done;
+    }
+
+    /* create the crc argument binding. */
+    Z3_ast arg_crc = Z3_mk_bound(ctx->ctx, 0, ctx->bv32);
+    if (NULL == arg_crc)
+    {
+        fprintf(stderr, "error: could not create crc argument.\n");
+        retval = 5;
+        goto done;
+    }
+
+    /* Create a 32-bit one value. */
+    Z3_ast c1 = mk_bv_from_uint64(ctx, 32, 1);
+    if (NULL == c1)
+    {
+        fprintf(stderr, "error: could not create c1 constant.\n");
+        retval = 6;
+        goto done;
+    }
+
+    /* if (idx >= len) */
+    Z3_ast cond = Z3_mk_bvuge(ctx->ctx, arg_idx, arg_len);
+    if (NULL == cond)
+    {
+        fprintf(stderr, "error: could not make condition.\n");
+        retval = 7;
+        goto done;
+    }
+
+    /* then: return crc-in. */
+    Z3_ast then_branch = arg_crc;
+
+    /* else: recursive case... */
+
+    /* increment index. */
+    Z3_ast next_idx = Z3_mk_bvadd(ctx->ctx, arg_idx, c1);
+    if (NULL == next_idx)
+    {
+        fprintf(stderr, "error: could not create next idx.\n");
+        retval = 8;
+        goto done;
+    }
+
+    /* select the byte at the current index. */
+    Z3_ast byte = Z3_mk_select(ctx->ctx, arg_data, arg_idx);
+    if (NULL == byte)
+    {
+        fprintf(stderr, "error: could not select byte from array.\n");
+        retval = 9;
+        goto done;
+    }
+
+    /* compute the new CRC by folding in this byte value. */
+    Z3_ast next_crc;
+    retval = crc_byte_step_block_create(&next_crc, ctx, arg_crc, byte);
+    if (0 != retval)
+    {
+        goto done;
+    }
+
+    /* call this function recursively. */
+    Z3_ast else_args[4] = { arg_data, arg_len, next_idx, next_crc };
+    Z3_ast else_branch  = Z3_mk_app(ctx->ctx, loop_decl, 4, else_args);
+    if (NULL == else_branch)
+    {
+        fprintf(stderr, "error: could not create recursive call.\n");
+        retval = 10;
+        goto done;
+    }
+
+    /* create the body of this recursive function. */
+    Z3_ast loop_body = Z3_mk_ite(ctx->ctx, cond, then_branch, else_branch);
+    if (NULL == loop_body)
+    {
+        fprintf(stderr, "error: could not create if-then-else.\n");
+        retval = 11;
+        goto done;
+    }
+
+    /* add the definition to our recursive function. */
+    Z3_ast param_vars[4] = { arg_data, arg_len, arg_idx, arg_crc };
+    Z3_add_rec_def(ctx->ctx, loop_decl, 4, param_vars, loop_body);
+    /* check for errors... */
+
+    /* success. */
+    retval = 0;
+    *fn = loop_decl;
     goto done;
 
 done:
