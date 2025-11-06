@@ -759,7 +759,7 @@ static int crc_recursive_loop_function_create(
 
     /* select the byte at the current index. */
     Z3_ast byte = Z3_mk_select(ctx->ctx, arg_data, arg_idx);
-    if (NULL == byte)
+    if (NULL == byte || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not select byte from array.\n");
         retval = 9;
