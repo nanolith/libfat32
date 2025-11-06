@@ -401,7 +401,7 @@ static int canonical_crc(
 
     /* get the model of the solution. */
     m = Z3_solver_get_model(ctx->ctx, s);
-    if (NULL == m)
+    if (NULL == m || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not get model.\n");
         retval = 12;
