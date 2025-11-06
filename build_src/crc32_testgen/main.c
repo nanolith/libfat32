@@ -849,7 +849,7 @@ static int crc_function_create(generator_context* ctx)
     /* create the function declaration. */
     Z3_func_decl fn_decl =
         Z3_mk_rec_func_decl(ctx->ctx, fn_sym, 2, fn_domain, ctx->bv32);
-    if (NULL == fn_decl)
+    if (NULL == fn_decl || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create function declaration.\n");
         retval = 2;
