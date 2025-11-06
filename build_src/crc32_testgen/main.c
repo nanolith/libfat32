@@ -325,7 +325,7 @@ static int canonical_crc(
     {
         /* create the store index. */
         Z3_ast idx = mk_bv_from_uint64(ctx, 32, i);
-        if (NULL == idx)
+        if (NULL == idx || Z3_OK != Z3_get_error_code(ctx->ctx))
         {
             fprintf(stderr, "Could not create store index.\n");
             retval = 4;
