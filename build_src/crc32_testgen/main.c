@@ -1082,7 +1082,7 @@ static int generate_constants_exercise_test(generator_context* ctx, FILE* out)
     {
         uint8_t input[1] = { i };
 
-        /* run a canonical crc on an empty test vector. */
+        /* run a canonical crc on this input constant. */
         retval = canonical_crc(&test_results[i], ctx, input, 1);
         if (0 != retval)
         {
