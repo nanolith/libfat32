@@ -522,7 +522,7 @@ static int crc_bit_step_block_create(
 
     /* create the comparison. */
     Z3_ast cmp = Z3_mk_eq(ctx->ctx, lsb, one_u1);
-    if (NULL == cmp)
+    if (NULL == cmp || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make comparison.\n");
         retval = 5;
