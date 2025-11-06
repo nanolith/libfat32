@@ -531,7 +531,7 @@ static int crc_bit_step_block_create(
 
     /* create the "then" branch. */
     Z3_ast then_branch = Z3_mk_bvxor(ctx->ctx, shift_op, polynomial);
-    if (NULL == then_branch)
+    if (NULL == then_branch || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make then branch.\n");
         retval = 6;
