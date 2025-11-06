@@ -903,7 +903,7 @@ static int crc_function_create(generator_context* ctx)
     /* call the loop function. */
     Z3_ast loop_fn_args[4] = { arg_data, arg_len, c0, cff };
     Z3_ast loop_fn_result = Z3_mk_app(ctx->ctx, loop_fn, 4, loop_fn_args);
-    if (NULL == loop_fn_result)
+    if (NULL == loop_fn_result || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not call loop function.\n");
         retval = 7;
