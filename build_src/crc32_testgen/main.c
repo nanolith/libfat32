@@ -691,7 +691,7 @@ static int crc_recursive_loop_function_create(
 
     /* create the data argument binding. */
     Z3_ast arg_data = Z3_mk_bound(ctx->ctx, 3, ctx->array);
-    if (NULL == arg_data)
+    if (NULL == arg_data || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create data array argument.\n");
         retval = 3;
