@@ -42,6 +42,7 @@ static int crc_recursive_loop_function_create(
     Z3_func_decl* fn, generator_context* ctx);
 static int crc_function_create(generator_context* ctx);
 static int generate_unit_tests(generator_context* ctx, FILE* out);
+static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -936,10 +937,12 @@ static int generate_unit_tests(generator_context* ctx, FILE* out)
     (void)ctx;
     int retval;
 
-    fprintf(out, "#include <libfat32/crc.h>\n");
-    fprintf(out, "#include <minunit/minunit.h>\n\n");
-    fprintf(out, "FAT32_IMPORT_crc32;\n\n");
-    fprintf(out, "TEST_SUITE(crc32);\n\n");
+    /* generate the front matter for the unit test file. */
+    retval = generate_unit_test_frontmatter(ctx, out);
+    if (0 != retval)
+    {
+        goto done;
+    }
 
     /* success. */
     retval = 0;
@@ -947,4 +950,24 @@ static int generate_unit_tests(generator_context* ctx, FILE* out)
 
 done:
     return retval;
+}
+
+/**
+ * \brief Generate the front matter for the unit test source file.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param out           The output file for this operation.
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out)
+{
+    (void)ctx;
+
+    fprintf(out, "#include <libfat32/crc.h>\n");
+    fprintf(out, "#include <minunit/minunit.h>\n\n");
+    fprintf(out, "FAT32_IMPORT_crc32;\n\n");
+    fprintf(out, "TEST_SUITE(crc32);\n\n");
+
+    return 0;
 }
