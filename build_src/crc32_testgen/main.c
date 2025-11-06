@@ -876,7 +876,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* create zero constant. */
     Z3_ast c0 = mk_bv_from_uint64(ctx, 32, 0);
-    if (NULL == c0)
+    if (NULL == c0 || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create zero constant.\n");
         retval = 5;
