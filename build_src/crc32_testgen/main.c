@@ -836,7 +836,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* create the function name symbol. */
     Z3_symbol fn_sym = Z3_mk_string_symbol(ctx->ctx, "crc-of-array");
-    if (NULL == fn_sym)
+    if (NULL == fn_sym || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create function symbol.\n");
         retval = 1;
