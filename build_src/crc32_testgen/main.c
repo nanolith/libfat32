@@ -1104,7 +1104,7 @@ static int generate_constants_exercise_test(generator_context* ctx, FILE* out)
         /* add a blank line every six constants. */
         if (i % 6 == 0)
         {
-            fprintf(out, "\n    ");
+            fprintf(out, "\n        ");
         }
 
         fprintf(out, "0x%08x, ", test_results[i]);
