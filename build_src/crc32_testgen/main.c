@@ -912,7 +912,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* create the function body. */
     Z3_ast fn_body = Z3_mk_bvxor(ctx->ctx, loop_fn_result, cff);
-    if (NULL == fn_body)
+    if (NULL == fn_body || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create function body.\n");
         retval = 8;
