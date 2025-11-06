@@ -895,7 +895,7 @@ static int crc_function_create(generator_context* ctx)
     /* create the loop function. */
     Z3_func_decl loop_fn = NULL;
     retval = crc_recursive_loop_function_create(&loop_fn, ctx);
-    if (NULL == loop_fn)
+    if (NULL == loop_fn || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         goto done;
     }
