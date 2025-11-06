@@ -669,7 +669,7 @@ static int crc_recursive_loop_function_create(
 
     /* create the recursive loop function symbol. */
     Z3_symbol loop_sym = Z3_mk_string_symbol(ctx->ctx, "crc-recursive-loop");
-    if (NULL == loop_sym)
+    if (NULL == loop_sym || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create loop function symbol.\n");
         retval = 1;
