@@ -58,11 +58,29 @@ int main(int argc, char* argv[])
     int retval;
     generator_context* ctx;
 
+    /* verify that we have an output file. */
+    if (argc != 2)
+    {
+        fprintf(
+            stderr, "error: expecting one argument, the output filename.\n");
+        retval = 1;
+        goto done;
+    }
+
+    /* open the output file for writing. */
+    FILE* out = fopen(argv[1], "w");
+    if (NULL == out)
+    {
+        fprintf(stderr, "error: could not open %s for writing.\n", argv[1]);
+        retval = 2;
+        goto done;
+    }
+
     /* create the context and load the script. */
     retval = context_create(&ctx);
     if (0 != retval)
     {
-        goto done;
+        goto cleanup_out;
     }
 
     /* run a canonical crc on our basic test vector. */
@@ -87,6 +105,9 @@ int main(int argc, char* argv[])
 
 cleanup_ctx:
     context_release(ctx);
+
+cleanup_out:
+    fclose(out);
 
 done:
     return retval;
