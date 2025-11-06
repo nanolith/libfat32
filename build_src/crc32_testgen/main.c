@@ -363,7 +363,7 @@ static int canonical_crc(
     /* create the function invocation. */
     Z3_ast args[2] = { input_array, length };
     Z3_ast fn_call = Z3_mk_app(ctx->ctx, ctx->crc_fn, 2, args);
-    if (NULL == fn_call)
+    if (NULL == fn_call || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not create function call.\n");
         retval = 0;
