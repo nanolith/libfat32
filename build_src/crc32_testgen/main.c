@@ -343,7 +343,7 @@ static int canonical_crc(
 
         /* create the store. */
         input_array = Z3_mk_store(ctx->ctx, input_array, idx, value);
-        if (NULL == input_array)
+        if (NULL == input_array || Z3_OK != Z3_get_error_code(ctx->ctx))
         {
             fprintf(stderr, "Could not update input array.\n");
             retval = 6;
