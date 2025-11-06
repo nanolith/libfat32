@@ -727,7 +727,7 @@ static int crc_recursive_loop_function_create(
 
     /* Create a 32-bit one value. */
     Z3_ast c1 = mk_bv_from_uint64(ctx, 32, 1);
-    if (NULL == c1)
+    if (NULL == c1 || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create c1 constant.\n");
         retval = 6;
