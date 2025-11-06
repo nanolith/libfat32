@@ -372,7 +372,7 @@ static int canonical_crc(
 
     /* create the result variable. */
     Z3_ast crc_result = Z3_mk_fresh_const(ctx->ctx, "result", ctx->bv32);
-    if (NULL == crc_result)
+    if (NULL == crc_result || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not make result constant.\n");
         retval = 9;
