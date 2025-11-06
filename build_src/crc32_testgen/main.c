@@ -169,7 +169,7 @@ static int context_create(generator_context** ctx)
 
     /* create the bv8 type. */
     tmp->bv8 = Z3_mk_bv_sort(tmp->ctx, 8);
-    if (NULL == tmp->bv8)
+    if (NULL == tmp->bv8 || Z3_OK != Z3_get_error_code(tmp->ctx))
     {
         fprintf(stderr, "error: could not create BitVec 8 type.\n");
         retval = 4;
