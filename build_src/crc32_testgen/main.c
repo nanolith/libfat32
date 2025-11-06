@@ -718,7 +718,7 @@ static int crc_recursive_loop_function_create(
 
     /* create the crc argument binding. */
     Z3_ast arg_crc = Z3_mk_bound(ctx->ctx, 0, ctx->bv32);
-    if (NULL == arg_crc)
+    if (NULL == arg_crc || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create crc argument.\n");
         retval = 5;
