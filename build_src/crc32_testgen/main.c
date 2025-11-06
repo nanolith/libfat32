@@ -495,7 +495,7 @@ static int crc_bit_step_block_create(
 
     /* create the 1-bit one constant. */
     Z3_ast one_u1 = mk_bv_from_uint64(ctx, 1, 1);
-    if (NULL == one_u1)
+    if (NULL == one_u1 || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make 1-bit one constant.\n");
         retval = 3;
