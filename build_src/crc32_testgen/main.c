@@ -786,7 +786,7 @@ static int crc_recursive_loop_function_create(
 
     /* create the body of this recursive function. */
     Z3_ast loop_body = Z3_mk_ite(ctx->ctx, cond, then_branch, else_branch);
-    if (NULL == loop_body)
+    if (NULL == loop_body || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create if-then-else.\n");
         retval = 11;
