@@ -353,7 +353,7 @@ static int canonical_crc(
 
     /* create the input length. */
     Z3_ast length = mk_bv_from_uint64(ctx, 32, size);
-    if (NULL == length)
+    if (NULL == length || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not create input array length.\n");
         retval = 7;
