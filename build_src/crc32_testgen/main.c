@@ -975,7 +975,7 @@ static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out)
     fprintf(out, "#include <libfat32/crc.h>\n");
     fprintf(out, "#include <minunit/minunit.h>\n\n");
     fprintf(out, "#include <stdint.h>\n\n");
-    fprintf(out, "FAT32_IMPORT_crc32;\n\n");
+    fprintf(out, "FAT32_IMPORT_crc;\n\n");
     fprintf(out, "TEST_SUITE(crc32);\n\n");
 
     return 0;
