@@ -334,7 +334,7 @@ static int canonical_crc(
 
         /* create the value to store at this array index. */
         Z3_ast value = mk_bv_from_uint64(ctx, 8, bdata[i]);
-        if (NULL == value)
+        if (NULL == value || Z3_OK != Z3_get_error_code(ctx->ctx))
         {
             fprintf(stderr, "Could not create store value.\n");
             retval = 5;
