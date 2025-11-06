@@ -543,7 +543,7 @@ static int crc_bit_step_block_create(
 
     /* make the if-then-else expression. */
     Z3_ast ite_expr = Z3_mk_ite(ctx->ctx, cmp, then_branch, else_branch);
-    if (NULL == ite_expr)
+    if (NULL == ite_expr || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make if-the-else expression.\n");
         retval = 7;
