@@ -44,6 +44,7 @@ static int crc_function_create(generator_context* ctx);
 static int generate_unit_tests(generator_context* ctx, FILE* out);
 static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out);
 static int generate_williams_test(generator_context* ctx, FILE* out);
+static int generate_empty_test(generator_context* ctx, FILE* out);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -952,6 +953,13 @@ static int generate_unit_tests(generator_context* ctx, FILE* out)
         goto done;
     }
 
+    /* generate empty file test. */
+    retval = generate_empty_test(ctx, out);
+    if (0 != retval)
+    {
+        goto done;
+    }
+
     /* success. */
     retval = 0;
     goto done;
@@ -1002,6 +1010,39 @@ static int generate_williams_test(generator_context* ctx, FILE* out)
                  "    const char* input = \"123456789\";\n\n"
                  "    TEST_ASSERT(EXPECTED_RESULT == crc32(input, 9));\n"
                  "}\n\n");
+
+    return 0;
+}
+
+/**
+ * \brief Generate the empty file test vector.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param out           The output file for this operation.
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int generate_empty_test(generator_context* ctx, FILE* out)
+{
+    int retval;
+    uint32_t test_result = 0;
+
+    /* run a canonical crc on an empty test vector. */
+    retval = canonical_crc(&test_result, ctx, "", 0);
+    if (0 != retval)
+    {
+        return retval;
+    }
+
+    fprintf(out, "/**\n"
+                 " * Empty file test vector.\n"
+                 " */\n"
+                 "TEST(crc32_empty_file)\n"
+                 "{\n"
+                 "    const uint32_t EXPECTED_RESULT = 0x%08x;\n"
+                 "    const char* input = \"\";\n\n"
+                 "    TEST_ASSERT(EXPECTED_RESULT == crc32(input, 0));\n"
+                 "}\n\n", test_result);
 
     return 0;
 }
