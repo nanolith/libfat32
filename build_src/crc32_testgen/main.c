@@ -45,6 +45,7 @@ static int generate_unit_tests(generator_context* ctx, FILE* out);
 static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out);
 static int generate_williams_test(generator_context* ctx, FILE* out);
 static int generate_empty_test(generator_context* ctx, FILE* out);
+static int generate_constants_exercise_test(generator_context* ctx, FILE* out);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -960,6 +961,13 @@ static int generate_unit_tests(generator_context* ctx, FILE* out)
         goto done;
     }
 
+    /* generate a unit test exercising the constants table. */
+    retval = generate_constants_exercise_test(ctx, out);
+    if (0 != retval)
+    {
+        goto done;
+    }
+
     /* success. */
     retval = 0;
     goto done;
@@ -1043,6 +1051,65 @@ static int generate_empty_test(generator_context* ctx, FILE* out)
                  "    const char* input = \"\";\n\n"
                  "    TEST_ASSERT(EXPECTED_RESULT == crc32(input, 0));\n"
                  "}\n\n", test_result);
+
+    return 0;
+}
+
+/**
+ * \brief Generate a unit test exercising the constants table.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param out           The output file for this operation.
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int generate_constants_exercise_test(generator_context* ctx, FILE* out)
+{
+    int retval;
+    uint32_t test_results[256];
+
+    /* run a canonical crc on all possible byte input values. */
+    for (int i = 0; i < 256; ++i)
+    {
+        uint8_t input[1] = { i };
+
+        /* run a canonical crc on an empty test vector. */
+        retval = canonical_crc(&test_results[i], ctx, input, 1);
+        if (0 != retval)
+        {
+            return retval;
+        }
+    }
+
+    /* begin test. */
+    fprintf(out, "/**\n"
+                 " * Constants test vector.\n"
+                 " */\n"
+                 "TEST(crc32_constants_test)\n"
+                 "{\n"
+                 "    const uint32_t EXPECTED_RESULTS[256] = {");
+
+    /* output expected results. */
+    for (int i = 0; i < 256; ++i)
+    {
+        /* add a blank line every six constants. */
+        if (i % 6 == 0)
+        {
+            fprintf(out, "\n    ");
+        }
+
+        fprintf(out, "0x%08x, ", test_results[i]);
+    }
+
+    /* end test. */
+    fprintf(out, "};\n\n"
+                 "    for (int i = 0; i < 256; ++i)\n"
+                 "    {\n"
+                 "        uint8_t input[1] = { (uint8_t)i };\n"
+                 "        TEST_ASSERT(EXPECTED_RESULTS[i] == "
+                              "crc32(input, 1));\n"
+                 "    }\n"
+                 "}\n");
 
     return 0;
 }
