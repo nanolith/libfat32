@@ -513,7 +513,7 @@ static int crc_bit_step_block_create(
 
     /* get the least-significant bit. */
     Z3_ast lsb = Z3_mk_extract(ctx->ctx, 0, 0, crc_in);
-    if (NULL == lsb)
+    if (NULL == lsb || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not extract lsb.\n");
         retval = 4;
