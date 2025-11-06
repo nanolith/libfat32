@@ -682,7 +682,7 @@ static int crc_recursive_loop_function_create(
     /* create the function declaration. */
     Z3_func_decl loop_decl =
         Z3_mk_rec_func_decl(ctx->ctx, loop_sym, 4, loop_domain, ctx->bv32);
-    if (NULL == loop_decl)
+    if (NULL == loop_decl || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create loop function decl.\n");
         retval = 2;
