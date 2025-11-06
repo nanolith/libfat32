@@ -858,7 +858,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* first argument. */
     Z3_ast arg_data = Z3_mk_bound(ctx->ctx, 1, ctx->array);
-    if (NULL == arg_data)
+    if (NULL == arg_data || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create first argument.\n");
         retval = 3;
