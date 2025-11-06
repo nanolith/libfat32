@@ -381,7 +381,7 @@ static int canonical_crc(
 
     /* create the equality portion of the assertion. */
     Z3_ast eq = Z3_mk_eq(ctx->ctx, crc_result, fn_call);
-    if (NULL == eq)
+    if (NULL == eq || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not make equality.\n");
         retval = 10;
