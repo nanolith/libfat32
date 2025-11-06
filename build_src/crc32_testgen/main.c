@@ -700,7 +700,7 @@ static int crc_recursive_loop_function_create(
 
     /* create the len argument binding. */
     Z3_ast arg_len = Z3_mk_bound(ctx->ctx, 2, ctx->bv32);
-    if (NULL == arg_len)
+    if (NULL == arg_len || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create len argument.\n");
         retval = 4;
