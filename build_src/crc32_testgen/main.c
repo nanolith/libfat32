@@ -486,7 +486,7 @@ static int crc_bit_step_block_create(
 
     /* create the 32-bit one constant. */
     Z3_ast one_u32 = mk_bv_from_uint64(ctx, 32, 1);
-    if (NULL == one_u32)
+    if (NULL == one_u32 || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make 32-bit one constant.\n");
         retval = 2;
