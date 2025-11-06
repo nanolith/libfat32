@@ -594,7 +594,7 @@ static int crc_byte_step_block_create(
 
     /* zero-extend the input byte. */
     Z3_ast zero_extend = Z3_mk_zero_ext(ctx->ctx, 24, byte_in);
-    if (NULL == zero_extend)
+    if (NULL == zero_extend || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make zero-extend expression.\n");
         retval = 1;
