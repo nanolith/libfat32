@@ -750,7 +750,7 @@ static int crc_recursive_loop_function_create(
 
     /* increment index. */
     Z3_ast next_idx = Z3_mk_bvadd(ctx->ctx, arg_idx, c1);
-    if (NULL == next_idx)
+    if (NULL == next_idx || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create next idx.\n");
         retval = 8;
