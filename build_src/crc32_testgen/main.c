@@ -504,7 +504,7 @@ static int crc_bit_step_block_create(
 
     /* right shift the CRC input by one. */
     Z3_ast shift_op = Z3_mk_bvlshr(ctx->ctx, crc_in, one_u32);
-    if (NULL == shift_op)
+    if (NULL == shift_op || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make shift operation.\n");
         retval = 4;
