@@ -295,7 +295,7 @@ static int canonical_crc(
 
     /* create a solver instance for running this computation. */
     s = Z3_mk_solver(ctx->ctx);
-    if (NULL == s)
+    if (NULL == s || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not create Z3 solver instance.\n");
         retval = 1;
