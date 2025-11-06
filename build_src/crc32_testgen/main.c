@@ -477,7 +477,7 @@ static int crc_bit_step_block_create(
 
     /* create the polynomial constant. */
     Z3_ast polynomial = mk_bv_from_uint64(ctx, 32, 0xedb88320);
-    if (NULL == polynomial)
+    if (NULL == polynomial || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make polynomial constant.\n");
         retval = 1;
