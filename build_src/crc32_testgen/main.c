@@ -313,7 +313,7 @@ static int canonical_crc(
 
     /* create a data array for holding our input data. */
     Z3_ast input_array = Z3_mk_const_array(ctx->ctx, ctx->bv32, v_zero);
-    if (NULL == input_array)
+    if (NULL == input_array || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not create input array.\n");
         retval = 3;
