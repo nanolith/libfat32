@@ -43,6 +43,7 @@ static int crc_recursive_loop_function_create(
 static int crc_function_create(generator_context* ctx);
 static int generate_unit_tests(generator_context* ctx, FILE* out);
 static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out);
+static int generate_williams_test(generator_context* ctx, FILE* out);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -944,6 +945,13 @@ static int generate_unit_tests(generator_context* ctx, FILE* out)
         goto done;
     }
 
+    /* generate the Ross N. Williams test. */
+    retval = generate_williams_test(ctx, out);
+    if (0 != retval)
+    {
+        goto done;
+    }
+
     /* success. */
     retval = 0;
     goto done;
@@ -966,8 +974,34 @@ static int generate_unit_test_frontmatter(generator_context* ctx, FILE* out)
 
     fprintf(out, "#include <libfat32/crc.h>\n");
     fprintf(out, "#include <minunit/minunit.h>\n\n");
+    fprintf(out, "#include <stdint.h>\n\n");
     fprintf(out, "FAT32_IMPORT_crc32;\n\n");
     fprintf(out, "TEST_SUITE(crc32);\n\n");
+
+    return 0;
+}
+
+/**
+ * \brief Generate the 123456789 test vector from Ross N. Williams' paper.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param out           The output file for this operation.
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int generate_williams_test(generator_context* ctx, FILE* out)
+{
+    (void)ctx;
+
+    fprintf(out, "/**\n"
+                 " * The test vector from the Ross N. Williams 1993 paper.\n"
+                 " */\n"
+                 "TEST(crc32_base_test)\n"
+                 "{\n"
+                 "    const uint32_t EXPECTED_RESULT = 0xcbf43926;\n"
+                 "    const char* input = \"123456789\";\n\n"
+                 "    TEST_ASSERT(EXPECTED_RESULT == crc32(input, 9));\n"
+                 "}\n\n");
 
     return 0;
 }
