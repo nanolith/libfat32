@@ -304,7 +304,7 @@ static int canonical_crc(
 
     /* we will initialize our array with zeroes. */
     Z3_ast v_zero = mk_bv_from_uint64(ctx, 8, 0);
-    if (NULL == v_zero)
+    if (NULL == v_zero || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "Could not create constant zero.\n");
         retval = 2;
