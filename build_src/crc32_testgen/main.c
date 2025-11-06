@@ -867,7 +867,7 @@ static int crc_function_create(generator_context* ctx)
 
     /* second argument. */
     Z3_ast arg_len = Z3_mk_bound(ctx->ctx, 0, ctx->bv32);
-    if (NULL == arg_len)
+    if (NULL == arg_len || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create second argument.\n");
         retval = 4;
