@@ -777,7 +777,7 @@ static int crc_recursive_loop_function_create(
     /* call this function recursively. */
     Z3_ast else_args[4] = { arg_data, arg_len, next_idx, next_crc };
     Z3_ast else_branch  = Z3_mk_app(ctx->ctx, loop_decl, 4, else_args);
-    if (NULL == else_branch)
+    if (NULL == else_branch || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not create recursive call.\n");
         retval = 10;
