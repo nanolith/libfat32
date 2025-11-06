@@ -41,6 +41,7 @@ static int crc_byte_step_block_create(
 static int crc_recursive_loop_function_create(
     Z3_func_decl* fn, generator_context* ctx);
 static int crc_function_create(generator_context* ctx);
+static int generate_unit_tests(generator_context* ctx, FILE* out);
 
 /**
  * \brief Entry point for CRC-32 test vector generator.
@@ -99,7 +100,14 @@ int main(int argc, char* argv[])
         goto cleanup_ctx;
     }
 
-    /* TODO - fill out generation part. */
+    /* generate unit tests. */
+    retval = generate_unit_tests(ctx, out);
+    if (0 != retval)
+    {
+        goto cleanup_ctx;
+    }
+
+    /* success. */
     retval = 0;
     goto cleanup_ctx;
 
@@ -908,6 +916,32 @@ static int crc_function_create(generator_context* ctx)
 
     /* success. */
     ctx->crc_fn = fn_decl;
+    retval = 0;
+    goto done;
+
+done:
+    return retval;
+}
+
+/**
+ * \brief Generate the unit test suite for crc32.
+ *
+ * \param ctx           The generator context for this operation.
+ * \param out           The output file for this operation.
+ *
+ * \returns 0 on success and non-zero on failure.
+ */
+static int generate_unit_tests(generator_context* ctx, FILE* out)
+{
+    (void)ctx;
+    int retval;
+
+    fprintf(out, "#include <libfat32/crc.h>\n");
+    fprintf(out, "#include <minunit/minunit.h>\n\n");
+    fprintf(out, "FAT32_IMPORT_crc32;\n\n");
+    fprintf(out, "TEST_SUITE(crc32);\n\n");
+
+    /* success. */
     retval = 0;
     goto done;
 
