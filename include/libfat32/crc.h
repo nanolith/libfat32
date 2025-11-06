@@ -50,6 +50,22 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
          * postconditions to check beyond unit testing. */
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(crc32))
 
+/******************************************************************************/
+/* Start of public exports.                                                   */
+/******************************************************************************/
+
+#define __INTERNAL_FAT32_IMPORT_crc_sym(sym) \
+    FAT32_BEGIN_EXPORT \
+    static inline uint32_t sym ## crc32( \
+        const void* x, size_t y) { \
+            return FAT32_SYM(crc32)(x,y); } \
+    FAT32_END_EXPORT \
+    REQUIRE_SEMICOLON_HERE
+#define FAT32_IMPORT_crc_as(sym) \
+    __INTERNAL_FAT32_IMPORT_crc_sym(sym ## _)
+#define FAT32_IMPORT_crc \
+    __INTERNAL_FAT32_IMPORT_crc_sym()
+
 /* C++ compatibility. */
 # ifdef   __cplusplus
 }
