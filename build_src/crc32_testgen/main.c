@@ -603,7 +603,7 @@ static int crc_byte_step_block_create(
 
     /* s0: xor the zero-extended byte and the crc input. */
     Z3_ast s = Z3_mk_bvxor(ctx->ctx, crc_in, zero_extend);
-    if (NULL == s)
+    if (NULL == s || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make s0 expression.\n");
         retval = 2;
