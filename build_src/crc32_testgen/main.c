@@ -187,7 +187,7 @@ static int context_create(generator_context** ctx)
 
     /* create the array type. */
     tmp->array = Z3_mk_array_sort(tmp->ctx, tmp->bv32, tmp->bv8);
-    if (NULL == tmp->array)
+    if (NULL == tmp->array || Z3_OK != Z3_get_error_code(tmp->ctx))
     {
         fprintf(stderr, "error: could not create array type.\n");
         retval = 6;
