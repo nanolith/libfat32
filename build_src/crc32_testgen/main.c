@@ -922,7 +922,12 @@ static int crc_function_create(generator_context* ctx)
     /* create the function definition. */
     Z3_ast fn_args[2] = { arg_data, arg_len };
     Z3_add_rec_def(ctx->ctx, fn_decl, 2, fn_args, fn_body);
-    /* TODO - check result. */
+    if (Z3_OK != Z3_get_error_code(ctx->ctx))
+    {
+        fprintf(stderr, "error: could not add function body to decl.\n");
+        retval = 9;
+        goto done;
+    }
 
     /* success. */
     ctx->crc_fn = fn_decl;
