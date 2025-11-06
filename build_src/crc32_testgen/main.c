@@ -736,7 +736,7 @@ static int crc_recursive_loop_function_create(
 
     /* if (idx >= len) */
     Z3_ast cond = Z3_mk_bvuge(ctx->ctx, arg_idx, arg_len);
-    if (NULL == cond)
+    if (NULL == cond || Z3_OK != Z3_get_error_code(ctx->ctx))
     {
         fprintf(stderr, "error: could not make condition.\n");
         retval = 7;
