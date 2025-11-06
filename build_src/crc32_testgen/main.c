@@ -796,7 +796,12 @@ static int crc_recursive_loop_function_create(
     /* add the definition to our recursive function. */
     Z3_ast param_vars[4] = { arg_data, arg_len, arg_idx, arg_crc };
     Z3_add_rec_def(ctx->ctx, loop_decl, 4, param_vars, loop_body);
-    /* check for errors... */
+    if (Z3_OK != Z3_get_error_code(ctx->ctx))
+    {
+        fprintf(stderr, "error: could not add recursive definition.\n");
+        retval = 12;
+        goto done;
+    }
 
     /* success. */
     retval = 0;
