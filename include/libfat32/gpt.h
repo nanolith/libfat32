@@ -132,6 +132,19 @@ bool FAT32_SYM(property_gpt_protective_mbr_partition_record_valid)(
 bool FAT32_SYM(property_gpt_protective_mbr_valid)(
     const FAT32_SYM(gpt_protective_mbr)* mbr);
 
+/**
+ * \brief Returns true if the given gpt header is valid.
+ *
+ * \note A valid gpt header has a valid signature and sane defaults. There isn't
+ * much more we can do to verify it.
+ *
+ * \param hdr           The header to check.
+ *
+ * \returns true if this record is valid and false otherwise.
+ */
+bool FAT32_SYM(property_gpt_header_valid)(
+    const FAT32_SYM(gpt_header)* hdr);
+
 /******************************************************************************/
 /* Start of constructors.                                                     */
 /******************************************************************************/
