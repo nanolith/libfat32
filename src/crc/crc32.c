@@ -22,6 +22,9 @@ uint32_t FAT32_SYM(crc32)(const void* data, size_t size)
 {
     uint32_t crc = 0xffffffff;
 
+    /* function contract preconditions. */
+    MODEL_CONTRACT_CHECK_PRECONDITIONS(FAT32_SYM(crc32), data, size);
+
     const uint8_t* bdata = (const uint8_t*)data;
     for (size_t i = 0; i < size; ++i)
     {
@@ -30,6 +33,9 @@ uint32_t FAT32_SYM(crc32)(const void* data, size_t size)
     }
 
     crc ^= 0xffffffff;
+
+    /* function contract postconditions. */
+    MODEL_CONTRACT_CHECK_POSTCONDITIONS(FAT32_SYM(crc32), crc, data, size);
 
     return crc;
 }
