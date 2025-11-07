@@ -433,6 +433,7 @@ MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_write))
     sym ## gpt_protective_mbr_partition_record; \
     typedef FAT32_SYM(gpt_protective_mbr) sym ## gpt_protective_mbr; \
     typedef FAT32_SYM(gpt_header) sym ## gpt_header; \
+    typedef FAT32_SYM(gpt_partition_entry) sym ## gpt_partition_entry; \
     static inline bool \
     sym ## property_gpt_protective_mbr_partition_record_valid( \
         const FAT32_SYM(gpt_protective_mbr_partition_record)* x) { \
