@@ -60,6 +60,31 @@ struct FAT32_SYM(gpt_protective_mbr)
     uint16_t signature;
 };
 
+/**
+ * \brief The GPT Header.
+ *
+ * \note As defined in the UEFI 2.11 Specification (Section 5.3.2 table 5.5).
+ */
+typedef struct FAT32_SYM(gpt_header) FAT32_SYM(gpt_header);
+
+struct FAT32_SYM(gpt_header)
+{
+    uint8_t signature[8];
+    uint32_t revision;
+    uint32_t header_size;
+    uint32_t header_crc32;
+    uint8_t reserved[4];
+    uint64_t my_lba;
+    uint64_t alternative_lba;
+    uint64_t first_usable_lba;
+    uint64_t last_usable_lba;
+    FAT32_SYM(guid) disk_guid;
+    uint64_t partition_entry_lba;
+    uint32_t number_of_partition_entries;
+    uint32_t size_of_partition_entry;
+    uint32_t partition_entry_array_crc32;
+};
+
 /******************************************************************************/
 /* Start of properties.                                                       */
 /******************************************************************************/
