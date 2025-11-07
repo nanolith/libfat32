@@ -478,6 +478,11 @@ MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_write))
         const FAT32_SYM(gpt_header)* x) { \
             return FAT32_SYM(property_gpt_header_valid)(x); \
         } \
+    static inline bool \
+    sym ## property_gpt_partition_entry_valid( \
+        const FAT32_SYM(gpt_partition_entry)* x) { \
+            return FAT32_SYM(property_gpt_partition_entry_valid)(x); \
+        } \
     static inline int FN_DECL_MUST_CHECK \
     sym ## gpt_protective_mbr_partition_record_init_clear( \
         FAT32_SYM(gpt_protective_mbr_partition_record)* x) { \
