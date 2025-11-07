@@ -145,6 +145,19 @@ bool FAT32_SYM(property_gpt_protective_mbr_valid)(
 bool FAT32_SYM(property_gpt_header_valid)(
     const FAT32_SYM(gpt_header)* hdr);
 
+/**
+ * \brief Returns true if the given gpt partition entry is valid.
+ *
+ * \note A valid gpt partition entry has sane values. There isn't much more we
+ * can do to verify it.
+ *
+ * \param entry         The entry to check.
+ *
+ * \returns true if this record is valid and false otherwise.
+ */
+bool FAT32_SYM(property_gpt_partition_entry_valid)(
+    const FAT32_SYM(gpt_partition_entry)* hdr);
+
 /******************************************************************************/
 /* Start of constructors.                                                     */
 /******************************************************************************/
