@@ -4,5 +4,6 @@ SET(CBMC_OPTIONS
     "--pointer-overflow-check" "--trace" "--stop-on-fail"
 	"--drop-unused-functions" "--unwind" "10" "--unwinding-assertions")
 
+ADD_SUBDIRECTORY(crc)
 ADD_SUBDIRECTORY(gpt)
 ADD_SUBDIRECTORY(guid)
