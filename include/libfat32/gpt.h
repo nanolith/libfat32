@@ -63,7 +63,7 @@ struct FAT32_SYM(gpt_protective_mbr)
 /**
  * \brief The GPT Header.
  *
- * \note As defined in the UEFI 2.11 Specification (Section 5.3.2 table 5.5).
+ * \note As defined in the UEFI 2.11 Specification (Section 5.3.2 Table 5.5).
  */
 typedef struct FAT32_SYM(gpt_header) FAT32_SYM(gpt_header);
 
