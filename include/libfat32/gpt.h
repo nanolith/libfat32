@@ -85,6 +85,23 @@ struct FAT32_SYM(gpt_header)
     uint32_t partition_entry_array_crc32;
 };
 
+/**
+ * \brief A GPT Partiton Entry.
+ *
+ * \note As defined in UEFI 2.11 Specification (Section 5.3.3 table 5.6)
+ */
+typedef struct FAT32_SYM(gpt_partition_entry) FAT32_SYM(gpt_partition_entry);
+
+struct FAT32_SYM(gpt_partition_entry)
+{
+    FAT32_SYM(guid) partition_type_guid;
+    FAT32_SYM(guid) unique_partition_guid;
+    uint64_t starting_lba;
+    uint64_t ending_lba;
+    uint64_t attributes;
+    uint16_t partition_name[36];
+};
+
 /******************************************************************************/
 /* Start of properties.                                                       */
 /******************************************************************************/
