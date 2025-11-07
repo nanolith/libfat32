@@ -1,0 +1,23 @@
+SET(MC_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/crc/crc32.c
+    ${CMAKE_BINARY_DIR}/src/crc/crc32_constants.c
+    main.c)
+
+ADD_EXECUTABLE(model_crc32 ${MC_SOURCES})
+SET_TARGET_PROPERTIES(
+    model_crc32 PROPERTIES
+    C_COMPILER_LAUNCHER "${COMPILER_CHOOSER};goto-cc"
+    C_LINKER_LAUNCHER "${LINKER_CHOOSER};goto-ld")
+TARGET_COMPILE_OPTIONS(
+    model_crc32 PRIVATE -DCBMC ${C_RELEASE_BUILD_OPTIONS})
+SET_PROPERTY(
+    TARGET model_crc32
+    PROPERTY JOB_POOL_LINK console)
+
+ADD_CUSTOM_COMMAND(
+    TARGET model_crc32
+    POST_BUILD
+    COMMAND cbmc ${CBMC_OPTIONS}
+        --unwindset fat32_708394ec_192d_4989_9512_fbfb7845b0c6_V0_0_crc32.0:11
+        model_crc32
+    USES_TERMINAL)
