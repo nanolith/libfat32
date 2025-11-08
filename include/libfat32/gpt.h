@@ -276,6 +276,25 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         }
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
 
+/**
+ * \brief Initialize a GPT header with the given disk GUID, first usable lba,
+ * last usable lba, and alternative lba.
+ *
+ * \param mbr               The record to initialize.
+ * \param disk_guid         The disk GUID.
+ * \param first_lba         The first usable lba.
+ * \param last_lba          The last usable lba.
+ * \param alt_lba           The alternative lba.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error code on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(gpt_header_init)(
+    FAT32_SYM(gpt_protective_mbr)* mbr, const FAT32_SYM(guid)* disk_guid,
+    uint64_t first_lba, uint64_t last_lba, uint64_t alt_lba);
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
