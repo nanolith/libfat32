@@ -312,6 +312,23 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_ASSERT(alt_lba > first_lba);
 MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
 
+/* postconditions. */
+MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
+    FAT32_SYM(gpt_header_init), int retval, FAT32_SYM(gpt_header)* header,
+    const FAT32_SYM(guid)* disk_guid, uint64_t first_lba, uint64_t last_lba,
+    uint64_t alt_lba)
+        /* this method either succeeds or fails with the following failure
+         * codes. */
+        MODEL_ASSERT(
+            (STATUS_SUCCESS == retval)
+         || (FAT32_ERROR_GPT_BAD_SIZE == retval));
+        /* on success, the header is valid. */
+        if (STATUS_SUCCESS == retval)
+        {
+            MODEL_ASSERT(FAT32_SYM(property_gpt_header_valid)(header));
+        }
+MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_header_init))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
