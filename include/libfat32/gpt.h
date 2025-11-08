@@ -310,7 +310,7 @@ MODEL_CONTRACT_PRECONDITIONS_BEGIN(
         MODEL_ASSERT(alt_lba <= last_lba);
         /* alt_lba must be greater than first lba. */
         MODEL_ASSERT(alt_lba > first_lba);
-MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_header_init))
 
 /* postconditions. */
 MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
