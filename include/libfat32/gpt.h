@@ -579,6 +579,11 @@ MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_protective_mbr_write))
         uint64_t y, uint64_t z) { \
             return FAT32_SYM(gpt_header_init)(v,w,x,y,z); } \
     static inline int FN_DECL_MUST_CHECK \
+    sym ## gpt_header_init_span( \
+        FAT32_SYM(gpt_header)* w, const FAT32_SYM(guid)* x, uint64_t y, \
+        uint64_t z) { \
+            return FAT32_SYM(gpt_header_init_span)(w,x,y,z); } \
+    static inline int FN_DECL_MUST_CHECK \
     sym ## gpt_protective_mbr_partition_record_read( \
         FAT32_SYM(gpt_protective_mbr_partition_record)* x, const void* y, \
         size_t z) { \
