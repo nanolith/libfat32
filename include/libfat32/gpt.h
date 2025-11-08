@@ -295,6 +295,23 @@ FAT32_SYM(gpt_header_init)(
     FAT32_SYM(gpt_header)* header, const FAT32_SYM(guid)* disk_guid,
     uint64_t first_lba, uint64_t last_lba, uint64_t alt_lba);
 
+/* preconditions. */
+MODEL_CONTRACT_PRECONDITIONS_BEGIN(
+    FAT32_SYM(gpt_header_init), FAT32_SYM(gpt_header)* header,
+    const FAT32_SYM(guid)* disk_guid, uint64_t first_lba, uint64_t last_lba,
+    uint64_t alt_lba)
+        /* header must be accessible. */
+        MODEL_CHECK_OBJECT_RW(header, sizeof(*header));
+        /* disk_guid must be valid. */
+        MODEL_ASSERT(FAT32_SYM(property_guid_valid)(disk_guid));
+        /* last_lba must be greater than first_lba. */
+        MODEL_ASSERT(last_lba > first_lba);
+        /* alt_lba must be less than or equal to last lba. */
+        MODEL_ASSERT(alt_lba <= last_lba);
+        /* alt_lba must be greater than first lba. */
+        MODEL_ASSERT(alt_lba > first_lba);
+MODEL_CONTRACT_PRECONDITIONS_END(FAT32_SYM(gpt_protective_mbr_init_span))
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
