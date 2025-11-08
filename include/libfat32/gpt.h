@@ -329,6 +329,27 @@ MODEL_CONTRACT_POSTCONDITIONS_BEGIN(
         }
 MODEL_CONTRACT_POSTCONDITIONS_END(FAT32_SYM(gpt_header_init))
 
+/**
+ * \brief Initialize a GPT header with sane settings for a disk with the given
+ * disk GUID, start lba (after protective MBR), and end lba.
+ *
+ * \note This method will compute the first, last, and alt lbas based on the
+ * provided parameters, assuming that lba size = 512.
+ *
+ * \param header            The record to initialize.
+ * \param disk_guid         The disk GUID.
+ * \param start_lba         The start lba for this disk.
+ * \param end_lba           The end lba for this disk.
+ *
+ * \returns a status code indicating success or failure.
+ *      - STATUS_SUCCESS on success.
+ *      - a non-zero error code on failure.
+ */
+int FN_DECL_MUST_CHECK
+FAT32_SYM(gpt_header_init_span)(
+    FAT32_SYM(gpt_header)* header, const FAT32_SYM(guid)* disk_guid,
+    uint64_t start_lba, uint64_t end_lba);
+
 /******************************************************************************/
 /* Start of public methods.                                                   */
 /******************************************************************************/
