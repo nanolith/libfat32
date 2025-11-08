@@ -14,8 +14,9 @@
 #include <libfat32/model_check/function_contracts.h>
 #include <libfat32/model_check/memory.h>
 #include <libfat32/status.h>
-#include <stdint.h>
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 /* C++ compatibility. */
 # ifdef   __cplusplus
@@ -38,6 +39,20 @@ struct FAT32_SYM(guid)
     uint16_t data3;
     uint8_t data4[8];
 };
+
+/******************************************************************************/
+/* Start of properties.                                                       */
+/******************************************************************************/
+
+/**
+ * \brief Returns true if the given guid is valid.
+ *
+ * \param id            The guid to check.
+ *
+ * \returns true if this guid is valid and false otherwise.
+ */
+bool FAT32_SYM(property_guid_valid)(
+    const FAT32_SYM(guid)* id);
 
 /******************************************************************************/
 /* Start of constructors.                                                     */
